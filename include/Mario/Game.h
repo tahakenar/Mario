@@ -13,6 +13,7 @@ class Game
         sf::Texture floor_texture_;
         sf::Texture pipe_texture_;
         sf::Texture pipe_s_texture_;
+        sf::Texture brick_texture_;
 
 
         sf::Sprite floor_sprite_;
@@ -21,6 +22,15 @@ class Game
         sf::Sprite left_pipe_s_sprite_;
         sf::Sprite right_pipe_s_sprite_;
 
+        sf::Sprite left_lower_brick_sprite_;
+        sf::Sprite left_mid_brick_sprite_;
+        sf::Sprite left_upper_brick_sprite_;
+
+        sf::Sprite mid_brick_sprite_;
+        
+        sf::Sprite right_lower_brick_sprite_;
+        sf::Sprite right_mid_brick_sprite_;
+        sf::Sprite right_upper_brick_sprite_;
 
 
     public:
