@@ -3,7 +3,7 @@
 
 #include "Mario/Object.h"
 
-class Mario: public Object
+class Mario : public Object
 {
     private:
         float vx_;
@@ -15,6 +15,5 @@ class Mario: public Object
         void jump(bool down);
         void fall(void);
 };
-
 
 #endif

@@ -8,12 +8,10 @@ class ScoreBoard
     private:
         std::string score_;
         int lives_;
-
     public:
-        void getScore(int score);
+        void setScore(int score);
         void setLives(int lives);
         int getLives(void);
 };
-
 
 #endif

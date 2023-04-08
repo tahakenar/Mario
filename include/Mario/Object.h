@@ -10,10 +10,9 @@ class Object
         sf::Texture textures_[8];
         sf::Sprite sprite_;
         sf::Vector2f pos_;
-        sf::RenderWindow window_;
+        sf::RenderWindow *window_;
         int state_;
         int heading_;
-
     public:
         Object(sf::RenderWindow *window);
         void setPosition(sf::Vector2f pos);
@@ -24,6 +23,7 @@ class Object
         void fall(void);
         void jump(bool down);
 };
+
 
 
 #endif
