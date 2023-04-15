@@ -3,6 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include "Mario/definitions.h"
+#include <iostream>
 
 class Object
 {

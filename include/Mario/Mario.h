@@ -14,6 +14,8 @@ class Mario : public Object
         void move();
         void jump(bool down);
         void fall(void);
+        void loadTextures(void);
+        void setSpeed(float vx, float vy);
 };
 
 #endif

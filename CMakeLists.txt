@@ -9,7 +9,7 @@ include_directories(${SFML_INCLUDE_DIR})
 include_directories(include)
 
 set(MARIO_SRC src/Mario)
-set(SOURCES ${MARIO_SRC}/Game.cpp ${MARIO_SRC}/Mario.cpp ${MARIO_SRC}/Object.cpp ${MARIO_SRC}/ScoreBoard.cpp ${MARIO_SRC}/Turtle.cpp)
+set(SOURCES ${MARIO_SRC}/Game.cpp ${MARIO_SRC}/Mario.cpp ${MARIO_SRC}/Object.cpp ${MARIO_SRC}/ScoreBoard.cpp ${MARIO_SRC}/Turtle.cpp ${MARIO_SRC}/Ground.cpp)
 add_library(MARIO_LIB ${SOURCES})
 target_link_libraries(MARIO_LIB sfml-graphics sfml-window)
 

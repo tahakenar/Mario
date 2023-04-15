@@ -5,5 +5,8 @@
 int main()
 {
 
+    Game game(GAME_SPEED);
+    game.update();
+
     return 0;
 }
