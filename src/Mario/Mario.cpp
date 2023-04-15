@@ -24,11 +24,44 @@ void Mario::move()
 {
     sf::Vector2f goal_mario_pos = getPosition();
     goal_mario_pos.x += vx_ * MARIO_STEP_SIZE;
+    goal_mario_pos.y += vy_ * MARIO_JUMP_STEP_SIZE;
     setPosition(goal_mario_pos);
+    // std::cout << "Mario x speed: " << vx_ << std::endl; 
 }
 
-void Mario::setSpeed(float vx, float vy)
+void Mario::setLateralSpeed(float vx)
 {
     vx_ = vx;
+}
+
+void Mario::lateralSpeedDecay()
+{
+    if (vx_ == 0)
+        return;
+    else if (vx_ > 0)
+    {
+        vx_ -= 1;
+    }
+    else
+    {
+        vx_ += 1;
+    }
+}
+
+void Mario::setVerticalSpeed(float vy)
+{
     vy_ = vy;
+}
+
+void Mario::gravityEffect(bool set)
+{
+    if (set)
+        vy_ += 1 * GRAVITY_COEFFICIENT;
+    else
+        vy_ = 0;
+}
+
+float Mario::getSpeedX(void)
+{
+    return vx_;
 }

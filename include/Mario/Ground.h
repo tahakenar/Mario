@@ -21,6 +21,7 @@ class Ground
         Ground(std::string asset_path, int width, int height);
         void draw(sf::RenderWindow *window);
         void setPosition(sf::Vector2f pos);
+        
 
 };
 

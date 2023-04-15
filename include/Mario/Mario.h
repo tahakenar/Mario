@@ -15,7 +15,11 @@ class Mario : public Object
         void jump(bool down);
         void fall(void);
         void loadTextures(void);
-        void setSpeed(float vx, float vy);
+        void setLateralSpeed(float vx);
+        void lateralSpeedDecay();
+        void setVerticalSpeed(float vy);
+        void gravityEffect(bool set);
+        float getSpeedX(void);
 };
 
 #endif

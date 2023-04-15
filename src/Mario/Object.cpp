@@ -15,6 +15,7 @@ void Object::setPosition(sf::Vector2f pos)
         pos_ = pos;
         sprite_.setPosition(pos_);
     }
+
 }
 
 sf::Vector2f Object::getPosition()

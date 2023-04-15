@@ -25,7 +25,7 @@ class Game
         Game(int speed);
         void update(void);
         void drawBackground(sf::RenderWindow &window);
-        // bool onFloor(Object *obj);
+        bool onFloor(Object *obj);
         // bool checkCollision(Turtle *t, Mario *m, int &side);
 };
 
