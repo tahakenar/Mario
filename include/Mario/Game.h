@@ -16,6 +16,7 @@ class Game
         sf::RenderWindow* window_;
         Background* floor_;
         Background* bricks_[7];
+        Background* pipes_[4];
 
         // Turtle* turtles_;
         Mario* mario_;
