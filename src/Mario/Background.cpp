@@ -22,6 +22,7 @@ void Background::setPosition(sf::Vector2f pos)
 
 void Background::flip(int axis)
 {
+    sprite_.setOrigin(sf::Vector2f(width_/2.0,height_/2.0));
     if (axis == X_AXIS)
     {
         sprite_.setScale(sf::Vector2f(1,-1));
@@ -30,5 +31,6 @@ void Background::flip(int axis)
     {
         sprite_.setScale(sf::Vector2f(-1,1));
     }
+    // sprite_.setOrigin(sf::Vector2f(0,0));
 }
 

@@ -29,10 +29,13 @@ Game::Game(int speed): speed_(speed)
     pipes_[2] = new Background(PIPE_S_ASSET_PATH, PIPE_S_WIDTH, PIPE_S_HEIGHT);
     pipes_[3] = new Background(PIPE_S_ASSET_PATH, PIPE_S_WIDTH, PIPE_S_HEIGHT);
 
-    pipes_[0]->setPosition(sf::Vector2f(PIPE_X_LEFT,PIPE_Y));
+    // TODO: Find a generic solution?
+    pipes_[0]->flip(Y_AXIS);
+    pipes_[0]->setPosition(sf::Vector2f(PIPE_X_LEFT+PIPE_WIDTH/2,PIPE_Y+PIPE_HEIGHT/2));
     pipes_[1]->setPosition(sf::Vector2f(PIPE_X_RIGHT,PIPE_Y));
     pipes_[2]->setPosition(sf::Vector2f(PIPE_S_X_LEFT, PIPE_S_Y));
-    pipes_[3]->setPosition(sf::Vector2f(PIPE_S_X_RIGHT, PIPE_S_Y));
+    pipes_[3]->flip(Y_AXIS);
+    pipes_[3]->setPosition(sf::Vector2f(PIPE_S_X_RIGHT+PIPE_S_WIDTH/2, PIPE_S_Y+PIPE_S_HEIGHT/2));
 
     // Initialize Mario
     mario_ = new Mario(window_);
