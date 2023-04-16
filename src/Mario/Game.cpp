@@ -5,7 +5,6 @@ Game::Game(int speed): speed_(speed)
     window_ = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT),"Mario");
 
     // TODO: create background
-
     floor_ = new Background(FLOOR_ASSET_PATH, FLOOR_WIDTH, FLOOR_HEIGHT);
     floor_->setPosition(sf::Vector2f(FLOOR_X, FLOOR_Y));
 
@@ -30,9 +29,12 @@ Game::Game(int speed): speed_(speed)
     pipes_[2] = new Background(PIPE_S_ASSET_PATH, PIPE_S_WIDTH, PIPE_S_HEIGHT);
     pipes_[3] = new Background(PIPE_S_ASSET_PATH, PIPE_S_WIDTH, PIPE_S_HEIGHT);
 
+    pipes_[0]->setPosition(sf::Vector2f(PIPE_X_LEFT,PIPE_Y));
+    pipes_[1]->setPosition(sf::Vector2f(PIPE_X_RIGHT,PIPE_Y));
+    pipes_[2]->setPosition(sf::Vector2f(PIPE_S_X_LEFT, PIPE_S_Y));
+    pipes_[3]->setPosition(sf::Vector2f(PIPE_S_X_RIGHT, PIPE_S_Y));
 
     // Initialize Mario
-
     mario_ = new Mario(window_);
     mario_->setPosition(sf::Vector2f(WINDOW_WIDTH/2, FLOOR_Y-MARIO_HEIGHT));
 
@@ -101,6 +103,10 @@ void Game::drawBackground(sf::RenderWindow &window)
     bricks_[4]->draw(window_);
     bricks_[5]->draw(window_);
     bricks_[6]->draw(window_);
+    pipes_[0]->draw(window_);
+    pipes_[1]->draw(window_);
+    pipes_[2]->draw(window_);
+    pipes_[3]->draw(window_);
 }
 
 bool Game::onFloor(Object *obj)

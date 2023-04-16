@@ -19,3 +19,16 @@ void Background::setPosition(sf::Vector2f pos)
     pos_ = pos;
     sprite_.setPosition(pos_.x, pos_.y);
 }
+
+void Background::flip(int axis)
+{
+    if (axis == X_AXIS)
+    {
+        sprite_.setScale(sf::Vector2f(1,-1));
+    }
+    if (axis == Y_AXIS)
+    {
+        sprite_.setScale(sf::Vector2f(-1,1));
+    }
+}
+

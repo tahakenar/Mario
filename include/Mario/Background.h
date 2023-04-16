@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <string>
+#include "Mario/definitions.h"
 
 class Background
 {
@@ -21,6 +22,7 @@ class Background
         Background(std::string asset_path, int width, int height);
         void draw(sf::RenderWindow *window);
         void setPosition(sf::Vector2f pos);
+        void flip(int axis);
         
 
 };
