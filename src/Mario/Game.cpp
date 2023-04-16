@@ -6,16 +6,16 @@ Game::Game(int speed): speed_(speed)
 
     // TODO: create background
 
-    floor_ = new Ground(FLOOR_ASSET_PATH, FLOOR_WIDTH, FLOOR_HEIGHT);
+    floor_ = new Background(FLOOR_ASSET_PATH, FLOOR_WIDTH, FLOOR_HEIGHT);
     floor_->setPosition(sf::Vector2f(FLOOR_X, FLOOR_Y));
 
-    bricks_[0] = new Ground(BRICK_ASSET_PATH, FIRST_FLOOR_BRICK_WIDTH, BRICK_HEIGHT);
-    bricks_[1] = new Ground(BRICK_ASSET_PATH, FIRST_FLOOR_BRICK_WIDTH, BRICK_HEIGHT);
-    bricks_[2] = new Ground(BRICK_ASSET_PATH, MIDDLE_BRICK_WIDTH, BRICK_HEIGHT);
-    bricks_[3] = new Ground(BRICK_ASSET_PATH, SHORT_BRICK_WIDTH, BRICK_HEIGHT);
-    bricks_[4] = new Ground(BRICK_ASSET_PATH, SHORT_BRICK_WIDTH, BRICK_HEIGHT);
-    bricks_[5] = new Ground(BRICK_ASSET_PATH, LAST_FLOOR_BRICK_WIDTH, BRICK_HEIGHT);
-    bricks_[6] = new Ground(BRICK_ASSET_PATH, LAST_FLOOR_BRICK_WIDTH, BRICK_HEIGHT);
+    bricks_[0] = new Background(BRICK_ASSET_PATH, FIRST_FLOOR_BRICK_WIDTH, BRICK_HEIGHT);
+    bricks_[1] = new Background(BRICK_ASSET_PATH, FIRST_FLOOR_BRICK_WIDTH, BRICK_HEIGHT);
+    bricks_[2] = new Background(BRICK_ASSET_PATH, MIDDLE_BRICK_WIDTH, BRICK_HEIGHT);
+    bricks_[3] = new Background(BRICK_ASSET_PATH, SHORT_BRICK_WIDTH, BRICK_HEIGHT);
+    bricks_[4] = new Background(BRICK_ASSET_PATH, SHORT_BRICK_WIDTH, BRICK_HEIGHT);
+    bricks_[5] = new Background(BRICK_ASSET_PATH, LAST_FLOOR_BRICK_WIDTH, BRICK_HEIGHT);
+    bricks_[6] = new Background(BRICK_ASSET_PATH, LAST_FLOOR_BRICK_WIDTH, BRICK_HEIGHT);
 
 
     bricks_[0]->setPosition(sf::Vector2f(FIRST_FLOOR_BRICK_X_LEFT, FIRST_FLOOR_BRICK_Y));

@@ -6,7 +6,7 @@
 #include "Mario/Turtle.h"
 #include "Mario/Mario.h"
 #include "Mario/Object.h"
-#include "Mario/Ground.h"
+#include "Mario/Background.h"
 
 class Game
 {
@@ -14,8 +14,8 @@ class Game
         int speed_;
 
         sf::RenderWindow* window_;
-        Ground* floor_;
-        Ground* bricks_[7];
+        Background* floor_;
+        Background* bricks_[7];
 
         // Turtle* turtles_;
         Mario* mario_;

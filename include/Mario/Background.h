@@ -1,11 +1,11 @@
-#ifndef GROUND_H
-#define GROUND_H
+#ifndef BACKGROUND_H
+#define BACKGROUND_H
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <string>
 
-class Ground
+class Background
 {
     private:
 
@@ -18,7 +18,7 @@ class Ground
         sf::FloatRect bounding_box_;
 
     public:
-        Ground(std::string asset_path, int width, int height);
+        Background(std::string asset_path, int width, int height);
         void draw(sf::RenderWindow *window);
         void setPosition(sf::Vector2f pos);
         
