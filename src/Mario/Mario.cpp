@@ -42,7 +42,9 @@ void Mario::setLateralSpeed(float vx)
 void Mario::lateralSpeedDecay()
 {
     if (vx_ == 0)
+    {
         return;
+    }
     else if (vx_ > 0)
     {
         vx_ -= 0.25;
@@ -89,43 +91,40 @@ void Mario::setState(int state)
 
 void Mario::updateTexture()
 {
-    // std::cout << "Origin: " << sprite_.getOrigin().x << " " << sprite_.getOrigin().y << std::endl;
-
-    // sprite_.setOrigin(sf::Vector2f(textures_[0].getSize().x/2.f, 0));
-
-    // std::cout << "Origin after set: " << sprite_.getOrigin().x << " " << sprite_.getOrigin().y << std::endl;
+    static int run_states = 0;
+    static int animation_change_cnt = 0;
 
     if (state_ == MarioStates::STILL)
         sprite_.setTexture(textures_[0]);
+    if (state_ == MarioStates::RUN)
+    {
+        animation_change_cnt++;
+        if (animation_change_cnt == 4)
+        {
+            sprite_.setTexture(textures_[run_states+1]);
+            spdlog::info("Run state: " + std::to_string(run_states+1));
+            run_states++;
+            animation_change_cnt = 0;
+        }
+
+        if (run_states == 3)
+            run_states = 0;
+    }
     if (state_ == MarioStates::JUMP)
         sprite_.setTexture(textures_[5]);
     if (state_ == MarioStates::SLIDE)
         sprite_.setTexture(textures_[4]);
 
-    spdlog::info("Origin: " + std::to_string(sprite_.getOrigin().x) + " - " + std::to_string(sprite_.getOrigin().y));
     if (heading_ == HEADING_LEFT)
     {
         sprite_.setScale(1.f,1.f);
         sprite_.setOrigin(0, sprite_.getOrigin().y);
-        std::cout << "Left: " << sprite_.getGlobalBounds().left << std::endl;
-
     }
     if (heading_ == HEADING_RIGHT)
     {
-        // && heading_changed_
         sprite_.setScale(-1.f,1.f);
         sprite_.setOrigin(+MARIO_WIDTH, sprite_.getOrigin().y);
-        std::cout << "Right: " << sprite_.getGlobalBounds().left << std::endl;
- 
-        // sprite_.move(MARIO_WIDTH, 0);
     }
-
-
-
-
-    // sprite_.setOrigin(sf::Vector2f(0, 0));
-    // std::cout << "Ultim origin: " << sprite_.getOrigin().x << " " << sprite_.getOrigin().y << std::endl;
-
 }
 
 void Mario::logSpeed()

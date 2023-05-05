@@ -51,6 +51,7 @@ Game::Game(int speed): speed_(speed)
 void Game::update(void)
 {
     static bool event_flag = false;
+    static bool slide = false;
     static bool up = false;
     static bool left = false;
     static bool right = false;
@@ -68,6 +69,7 @@ void Game::update(void)
             
             if (event.type == sf::Event::KeyPressed)
             {
+                slide = false;
                 spdlog::info("Key pressed");
                 switch (event.key.code)
                 {
@@ -97,9 +99,11 @@ void Game::update(void)
                 switch (event.key.code)
                 {
                 case sf::Keyboard::Left:
+                    slide = true;
                     left = false;
                     break;
                 case sf::Keyboard::Right:
+                    slide = true;
                     right = false;
                     break;
                 default:
@@ -112,7 +116,7 @@ void Game::update(void)
         {
             mario_->setLateralSpeed(MARIO_LATERAL_LEFT_SPEED);
             mario_->setHeading(HEADING_LEFT);
-            mario_->setState(MarioStates::STILL);
+            mario_->setState(MarioStates::RUN);
             mario_->updateTexture();
             // spdlog::info("Mario runs left");
         }
@@ -120,7 +124,7 @@ void Game::update(void)
         {
             mario_->setLateralSpeed(MARIO_LATERAL_RIGHT_SPEED);
             mario_->setHeading(HEADING_RIGHT);
-            mario_->setState(MarioStates::STILL);
+            mario_->setState(MarioStates::RUN);
             mario_->updateTexture();
             // spdlog::info("Mario runs right");
         }
@@ -131,9 +135,17 @@ void Game::update(void)
             mario_->updateTexture();
             // spdlog::info("Mario jumps");
         }
-        if (!(left) && !(right) && onFloor(mario_))
+        if (!(left) && !(right) && onFloor(mario_) && !(up) && mario_->getSpeedX() != 0 && slide)
         {
             mario_->lateralSpeedDecay();
+            spdlog::warn("Imma slidin");
+            mario_->setState(MarioStates::SLIDE);
+            mario_->updateTexture();
+        }
+        if (!(up) && onFloor(mario_) && mario_->getSpeedX() == 0)
+        {
+            mario_->setState(MarioStates::STILL);
+            mario_->updateTexture();
         }
 
         // // mario_->updateTexture();
@@ -143,8 +155,8 @@ void Game::update(void)
         if (onFloor(mario_))
         {
             mario_->gravityEffect(false);
-            mario_->setState(MarioStates::STILL);
-            mario_->updateTexture();
+            // mario_->setState(MarioStates::STILL);
+            // mario_->updateTexture();
         }
         else 
         {
