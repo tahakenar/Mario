@@ -31,7 +31,6 @@ void Background::flip(int axis)
     {
         sprite_.setScale(sf::Vector2f(-1,1));
     }
-    // sprite_.setOrigin(sf::Vector2f(0,0));
 }
 
 sf::IntRect Background::boundingBox(void)

@@ -66,6 +66,10 @@
         "__functional_base": "cpp",
         "functional": "cpp",
         "iterator": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "charconv": "cpp",
+        "condition_variable": "cpp",
+        "format": "cpp",
+        "set": "cpp"
     }
 }

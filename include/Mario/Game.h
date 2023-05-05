@@ -18,7 +18,7 @@ class Game
         Background* bricks_[7];
         Background* pipes_[4];
 
-        // Turtle* turtles_;
+        Turtle* turtles_;
         Mario* mario_;
 
     public:

@@ -44,68 +44,122 @@ Game::Game(int speed): speed_(speed)
 
     // TODO: Initialize turtles
 
+    turtles_ = new Turtle(window_);
+
 }
 
 void Game::update(void)
 {
     static bool event_flag = false;
+    static bool up = false;
+    static bool left = false;
+    static bool right = false;
+    static bool down = false;
+
 
     while (window_->isOpen())
     {
+        // spdlog::info("running");
         sf::Event event;
         if (window_->pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
                 window_->close();
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && onFloor(mario_))
+            
+            if (event.type == sf::Event::KeyPressed)
             {
-                event_flag = true;
-                mario_->setLateralSpeed(MARIO_LATERAL_LEFT_SPEED);
-            }
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && onFloor(mario_))
-            {
-                event_flag = true;
-                mario_->setLateralSpeed(MARIO_LATERAL_RIGHT_SPEED);
-            }
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && onFloor(mario_))
-            {
-                // CAUTION: Do not double jump
-                event_flag = true;
-                mario_->setVerticalSpeed(MARIO_JUMP_SPEED);
-            }
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && onFloor(mario_))
-            {
-                // downwards - handle floor
-                mario_->gravityEffect(false);
-                // if (mario_->getPosition() )
-                mario_->setPosition(sf::Vector2f(mario_->getPosition().x, mario_->getPosition().y + 30));
-                mario_->setVerticalSpeed(10);
-            }
-            else
-            {
-                event_flag = false;
-                mario_->lateralSpeedDecay();
+                spdlog::info("Key pressed");
+                switch (event.key.code)
+                {
+                case  sf::Keyboard::Up:
+                    // spdlog::info("Up button pressed");
+                    up = true;
+                    break;
+                case sf::Keyboard::Left:
+                    // spdlog::info("Left button pressed");
+                    left = true;
+                    break;
+                case sf::Keyboard::Right:
+                    // spdlog::info("Right button pressed");
+                    right = true;
+                    break;
+                case sf::Keyboard::Down:
+                    // spdlog::info("Down button pressed");
+                    down = true;
+                    break;
+                default:
+                    break;
+                }
             }
 
+            if (event.type == sf::Event::KeyReleased)
+            {
+                switch (event.key.code)
+                {
+                case sf::Keyboard::Left:
+                    left = false;
+                    break;
+                case sf::Keyboard::Right:
+                    right = false;
+                    break;
+                default:
+                    break;
+                }
+            }
         }
 
-        mario_->move();
-        if (!(event_flag))
+        if (left && onFloor(mario_))
+        {
+            mario_->setLateralSpeed(MARIO_LATERAL_LEFT_SPEED);
+            mario_->setHeading(HEADING_LEFT);
+            mario_->setState(MarioStates::STILL);
+            mario_->updateTexture();
+            // spdlog::info("Mario runs left");
+        }
+        if (right && onFloor(mario_))
+        {
+            mario_->setLateralSpeed(MARIO_LATERAL_RIGHT_SPEED);
+            mario_->setHeading(HEADING_RIGHT);
+            mario_->setState(MarioStates::STILL);
+            mario_->updateTexture();
+            // spdlog::info("Mario runs right");
+        }
+        if (up && onFloor(mario_))
+        {
+            mario_->setVerticalSpeed(MARIO_JUMP_SPEED);
+            mario_->setState(MarioStates::JUMP);
+            mario_->updateTexture();
+            // spdlog::info("Mario jumps");
+        }
+        if (!(left) && !(right) && onFloor(mario_))
+        {
             mario_->lateralSpeedDecay();
+        }
+
+        // // mario_->updateTexture();
+        mario_->move();
+        // if (!(event_flag))
+        //     mario_->lateralSpeedDecay();
         if (onFloor(mario_))
         {
             mario_->gravityEffect(false);
+            mario_->setState(MarioStates::STILL);
+            mario_->updateTexture();
         }
         else 
         {
             mario_->gravityEffect(true);
+            // mario_->logSpeed();
+            // mario_->logPosition();
+            // spdlog::info("Mario is not on the floor!");
+
         }
 
         if (hitCeiling(mario_))
         {
             mario_->gravityEffect(true);
             mario_->setVerticalSpeed(5);
+            spdlog::info("Mario hits ceiling");
         }
         
         window_->clear();
@@ -115,6 +169,9 @@ void Game::update(void)
 
         window_->display();
         sf::sleep(sf::milliseconds(10000/speed_));
+
+        up = false;
+        down = false;
     }
 }
 

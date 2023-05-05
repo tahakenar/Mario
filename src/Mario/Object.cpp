@@ -14,11 +14,15 @@ void Object::setPosition(sf::Vector2f pos)
     {
         pos.y = FLOOR_Y;
     }
-    if (pos.x > LATERAL_INTERACTION_TRESHOLD && pos.x < WINDOW_WIDTH - (MARIO_WIDTH+LATERAL_INTERACTION_TRESHOLD))
+    if (pos.x < LATERAL_INTERACTION_TRESHOLD)
     {
-        pos_ = pos;
-        sprite_.setPosition(pos_);
+        pos.x = LATERAL_INTERACTION_TRESHOLD;
     }
+    if (pos.x > WINDOW_WIDTH - MARIO_WIDTH - LATERAL_INTERACTION_TRESHOLD)
+        pos.x = WINDOW_WIDTH - MARIO_WIDTH - LATERAL_INTERACTION_TRESHOLD;
+
+    pos_ = pos;
+    sprite_.setPosition(pos_);
 
 
 }
