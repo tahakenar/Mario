@@ -1,4 +1,5 @@
 #include "Mario/Game.h"
+#include "spdlog/spdlog.h"
 
 Game::Game(int speed): speed_(speed)
 {
@@ -73,6 +74,14 @@ void Game::update(void)
                 event_flag = true;
                 mario_->setVerticalSpeed(MARIO_JUMP_SPEED);
             }
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && onFloor(mario_))
+            {
+                // downwards - handle floor
+                mario_->gravityEffect(false);
+                // if (mario_->getPosition() )
+                mario_->setPosition(sf::Vector2f(mario_->getPosition().x, mario_->getPosition().y + 30));
+                mario_->setVerticalSpeed(10);
+            }
             else
             {
                 event_flag = false;
@@ -91,6 +100,12 @@ void Game::update(void)
         else 
         {
             mario_->gravityEffect(true);
+        }
+
+        if (hitCeiling(mario_))
+        {
+            mario_->gravityEffect(true);
+            mario_->setVerticalSpeed(5);
         }
         
         window_->clear();
@@ -120,7 +135,7 @@ void Game::drawBackground(sf::RenderWindow &window)
     pipes_[3]->draw(window_);
 }
 
-bool getFloorIntersection(const sf::IntRect& obj, const sf::IntRect& floor)
+bool Game::checkFloorIntersection(const sf::IntRect& obj, const sf::IntRect& floor)
 {
     int mid_point = obj.left + obj.width/2;
 
@@ -132,53 +147,46 @@ bool getFloorIntersection(const sf::IntRect& obj, const sf::IntRect& floor)
     return false;
 }
 
-bool Game::onFloor(Object *obj)
+bool Game::checkCeilingIntersection(const sf::IntRect& obj, const sf::IntRect& ceiling)
 {
-    // TODO: set a treshold
-    sf::IntRect test_rect = obj->boundingBox();
-    sf::Vector2f pos = obj->getPosition();
+    int mid_point = obj.left + obj.width/2;
+    if (abs(ceiling.top + ceiling.height - obj.top) < CEILING_INTERACTION_TRESHOLD)
+            if ((mid_point > ceiling.left) && (mid_point < ceiling.width + ceiling.left))
+                return true;
+    else
+        return false;
+}
 
+bool Game::hitCeiling(Object *obj)
+{
     sf::IntRect obj_bounding_box = obj->boundingBox();
-    std::cout << "Object top: " << obj_bounding_box.top << std::endl;
-    std::cout << "Object height: " << obj_bounding_box.height << std::endl;
-    std::cout << "Object bottom: " << obj_bounding_box.top + obj_bounding_box.height << std::endl;
-    sf::IntRect brick_bb = bricks_[0]->boundingBox();
-
-
-    sf::IntRect floor_bb = floor_->boundingBox();
-
-    std::cout << "Brick height: " << brick_bb.height << std::endl;
-    std::cout << "Brick top: " << brick_bb.top << std::endl;
-    // std::cout << "Brick height: " << brick_bb.height << std::endl;
-    std::cout << "Diff: " << brick_bb.top - (obj_bounding_box.top + obj_bounding_box.height) << std::endl;
-
-
-    // if ((abs(brick_bb.top - (obj_bounding_box.top + obj_bounding_box.height)) < FLOOR_INTERACTION_TRESHOLD)
-    // && (brick_bb.left < obj_bounding_box.left && brick_bb.left + brick_bb.width > obj_bounding_box.left + obj_bounding_box.width))
-    // {
-    //     obj->setPosition(sf::Vector2f(obj->getPosition().x, float(brick_bb.top)-obj_bounding_box.height));
-    //     return true; 
-    // }
-
-    
-
-    // if (getFloorIntersection(obj_bounding_box, brick_bb))
-    // {
-    //     return true;
-    // }
 
     for (const auto& brick : bricks_)
     {
-        if (getFloorIntersection(obj_bounding_box, brick->boundingBox()))
+        if (checkCeilingIntersection(obj_bounding_box, brick->boundingBox()))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+bool Game::onFloor(Object *obj)
+{
+    sf::IntRect obj_bounding_box = obj->boundingBox();
+
+    for (const auto& brick : bricks_)
+    {
+        if (checkFloorIntersection(obj_bounding_box, brick->boundingBox()))
         {
             obj->setPosition(sf::Vector2f(obj->getPosition().x, float(brick->boundingBox().top - obj_bounding_box.height)));
             return true;
         }
     }
 
-    // if ((floor_bb.top - (obj_bounding_box.top + obj_bounding_box.height)) < FLOOR_INTERACTION_TRESHOLD)
-
-    if (getFloorIntersection(obj_bounding_box, floor_bb))
+    sf::IntRect floor_bb = floor_->boundingBox();
+    if (checkFloorIntersection(obj_bounding_box, floor_bb))
     {
         obj->setPosition(sf::Vector2f(obj->getPosition().x, float(FLOOR_Y)-obj_bounding_box.height));
         return true;

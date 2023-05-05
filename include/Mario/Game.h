@@ -25,7 +25,10 @@ class Game
         Game(int speed);
         void update(void);
         void drawBackground(sf::RenderWindow &window);
+        bool checkFloorIntersection(const sf::IntRect& obj, const sf::IntRect& floor);
+        bool checkCeilingIntersection(const sf::IntRect& obj, const sf::IntRect& ceiling);
         bool onFloor(Object *obj);
+        bool hitCeiling(Object *obj);
         // bool checkCollision(Turtle *t, Mario *m, int &side);
 };
 
