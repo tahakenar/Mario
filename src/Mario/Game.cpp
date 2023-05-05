@@ -126,12 +126,39 @@ bool Game::onFloor(Object *obj)
     sf::IntRect test_rect = obj->boundingBox();
     sf::Vector2f pos = obj->getPosition();
 
-    if ((FLOOR_Y - (test_rect.height + pos.y)) < FLOOR_INTERACTION_TRESHOLD)
+    sf::IntRect obj_bounding_box = obj->boundingBox();
+    std::cout << "Object top: " << obj_bounding_box.top << std::endl;
+    std::cout << "Object height: " << obj_bounding_box.height << std::endl;
+    std::cout << "Object bottom: " << obj_bounding_box.top + obj_bounding_box.height << std::endl;
+    sf::IntRect brick_bb = bricks_[0]->boundingBox();
+
+
+    sf::IntRect floor_bb = floor_->boundingBox();
+
+    std::cout << "Brick height: " << brick_bb.height << std::endl;
+    std::cout << "Brick top: " << brick_bb.top << std::endl;
+    // std::cout << "Brick height: " << brick_bb.height << std::endl;
+    std::cout << "Diff: " << brick_bb.top - (obj_bounding_box.top + obj_bounding_box.height) << std::endl;
+
+
+    if ((abs(brick_bb.top - (obj_bounding_box.top + obj_bounding_box.height)) < FLOOR_INTERACTION_TRESHOLD)
+    && (brick_bb.left < obj_bounding_box.left && brick_bb.left + brick_bb.width > obj_bounding_box.left + obj_bounding_box.width))
     {
-        return true;
+        std::cout << "yep your on top\n";
+        obj->setPosition(sf::Vector2f(obj->getPosition().x, float(brick_bb.top)-obj_bounding_box.height));
+        return true; 
     }
+
+    if ((floor_bb.top - (obj_bounding_box.top + obj_bounding_box.height)) < FLOOR_INTERACTION_TRESHOLD)
+    {
+        obj->setPosition(sf::Vector2f(obj->getPosition().x, float(FLOOR_Y)-obj_bounding_box.height));
+        return true;
+
+    }
+
     else
     {
         return false;
     }
+
 }

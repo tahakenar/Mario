@@ -26,9 +26,7 @@ sf::Vector2f Object::getPosition()
 sf::IntRect Object::boundingBox(void)
 {
     sf::FloatRect bounding_box =  sprite_.getGlobalBounds();
-    sf::IntRect int_bounding_box;
-    int_bounding_box.height = static_cast<int>(bounding_box.height);
-    int_bounding_box.width = static_cast<int>(bounding_box.width);
+    sf::IntRect int_bounding_box = static_cast<sf::IntRect>(bounding_box);
     return int_bounding_box;
 }
 

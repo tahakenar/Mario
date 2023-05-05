@@ -26,8 +26,6 @@ void Mario::move()
     goal_mario_pos.x += vx_ * MARIO_STEP_SIZE;
     goal_mario_pos.y += vy_ * MARIO_JUMP_STEP_SIZE;
     setPosition(goal_mario_pos);
-    std::cout << "Mario x speed: " << vx_ << std::endl; 
-    std::cout << "Mario y speed: " << vy_ << std::endl; 
 }
 
 void Mario::setLateralSpeed(float vx)
@@ -37,16 +35,15 @@ void Mario::setLateralSpeed(float vx)
 
 void Mario::lateralSpeedDecay()
 {
-    std::cout << "Lateral speed decay\n";
     if (vx_ == 0)
         return;
     else if (vx_ > 0)
     {
-        vx_ -= 0.5;
+        vx_ -= 0.125;
     }
     else
     {
-        vx_ += 0.5;
+        vx_ += 0.125;
     }
 }
 
@@ -58,7 +55,7 @@ void Mario::setVerticalSpeed(float vy)
 void Mario::gravityEffect(bool set)
 {
     if (set)
-        vy_ += 1 * GRAVITY_COEFFICIENT;
+        vy_ = vy_ >= 30 ? -MARIO_JUMP_SPEED : vy_ + GRAVITY_COEFFICIENT;
     else
         vy_ = 0;
 }

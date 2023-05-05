@@ -34,3 +34,9 @@ void Background::flip(int axis)
     // sprite_.setOrigin(sf::Vector2f(0,0));
 }
 
+sf::IntRect Background::boundingBox(void)
+{
+    sf::FloatRect bounding_box =  sprite_.getGlobalBounds();
+    sf::IntRect int_bounding_box = static_cast<sf::IntRect>(bounding_box);
+    return int_bounding_box;
+}

@@ -23,6 +23,8 @@ class Background
         void draw(sf::RenderWindow *window);
         void setPosition(sf::Vector2f pos);
         void flip(int axis);
+        sf::IntRect boundingBox(void);
+
         
 
 };
