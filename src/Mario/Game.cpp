@@ -47,35 +47,43 @@ Game::Game(int speed): speed_(speed)
 
 void Game::update(void)
 {
+    static bool event_flag = false;
+
     while (window_->isOpen())
     {
         sf::Event event;
-        while (window_->pollEvent(event))
+        if (window_->pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
                 window_->close();
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && onFloor(mario_))
             {
+                event_flag = true;
                 mario_->setLateralSpeed(MARIO_LATERAL_LEFT_SPEED);
             }
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && onFloor(mario_))
             {
+                event_flag = true;
                 mario_->setLateralSpeed(MARIO_LATERAL_RIGHT_SPEED);
             }
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && onFloor(mario_))
             {
                 // CAUTION: Do not double jump
+                event_flag = true;
                 mario_->setVerticalSpeed(MARIO_JUMP_SPEED);
             }
             else
             {
-                mario_->setLateralSpeed(0);
+                event_flag = false;
+                mario_->lateralSpeedDecay();
             }
 
         }
 
         mario_->move();
+        if (!(event_flag))
+            mario_->lateralSpeedDecay();
         if (onFloor(mario_))
         {
             mario_->gravityEffect(false);
@@ -91,7 +99,7 @@ void Game::update(void)
         mario_->draw(*window_);
 
         window_->display();
-        sf::sleep(sf::milliseconds(1000/speed_));
+        sf::sleep(sf::milliseconds(10000/speed_));
     }
 }
 
