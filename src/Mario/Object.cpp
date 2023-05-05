@@ -10,11 +10,16 @@ Object::Object(sf::RenderWindow *window)
 
 void Object::setPosition(sf::Vector2f pos)
 {
-    if (pos.x > 0 && pos.x < WINDOW_WIDTH - MARIO_WIDTH)
+    if (pos.y > FLOOR_Y)
+    {
+        pos.y = FLOOR_Y;
+    }
+    if (pos.x > LATERAL_INTERACTION_TRESHOLD && pos.x < WINDOW_WIDTH - (MARIO_WIDTH+LATERAL_INTERACTION_TRESHOLD))
     {
         pos_ = pos;
         sprite_.setPosition(pos_);
     }
+
 
 }
 
