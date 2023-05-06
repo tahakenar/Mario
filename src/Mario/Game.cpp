@@ -143,32 +143,22 @@ void Game::update(void)
             mario_->updateTexture();
         }
 
-        // // mario_->updateTexture();
         mario_->move();
-        // if (!(event_flag))
-        //     mario_->lateralSpeedDecay();
+
         if (onFloor(mario_))
         {
             mario_->gravityEffect(false);
-            // mario_->setState(MarioStates::STILL);
-            // mario_->updateTexture();
         }
         else 
         {
             mario_->gravityEffect(true);
-            // mario_->logSpeed();
-            // mario_->logPosition();
-            // spdlog::info("Mario is not on the floor!");
-
         }
 
         if (hitCeiling(mario_))
         {
+            // TODO: Should I move it into Mario class?
             mario_->gravityEffect(true);
             mario_->setVerticalSpeed(5);
-            spdlog::info("Mario hits ceiling");
-            // mario_->logPosition();
-            // mario_->logSpeed();
         }
         
 
@@ -180,8 +170,8 @@ void Game::update(void)
 
             spdlog::error("died");
         }
-        mario_->draw(*window_);
 
+        mario_->draw(*window_);
         window_->display();
         sf::sleep(sf::milliseconds(10000/speed_));
 
@@ -192,45 +182,16 @@ void Game::update(void)
 
 void Game::drawBackground(sf::RenderWindow &window)
 {
-    // CAUTION: Do we need to pass window as an argument?
-    floor_->draw(window_);
-    bricks_[0]->draw(window_);
-    bricks_[1]->draw(window_);
-    bricks_[2]->draw(window_);
-    bricks_[3]->draw(window_);
-    bricks_[4]->draw(window_);
-    bricks_[5]->draw(window_);
-    bricks_[6]->draw(window_);
-    pipes_[0]->draw(window_);
-    pipes_[1]->draw(window_);
-    pipes_[2]->draw(window_);
-    pipes_[3]->draw(window_);
+    floor_->draw(dynamic_cast<sf::RenderWindow*>(&window));
 
-    // TESTING PURPOSES ONLY
+    for (const auto &brick : bricks_)
+        brick->draw(dynamic_cast<sf::RenderWindow*>(&window));
 
-    sf::Font font;
-    font.loadFromFile("../assets/font.ttf");
-    sf::Text text;
-    text.setFont(font);
-    text.setString(score_board_->getScore());
-    text.setCharacterSize(60);
-    text.setFillColor(sf::Color::White);
-    window_->draw(text);
+    for (const auto &pipe: pipes_)
+        pipe->draw(dynamic_cast<sf::RenderWindow*>(&window));
 
-    // TESTING PURPOSES LIVES
-        int lives = score_board_->getLives();
-
-        for (int i = 0; i < lives; i++)
-        {
-            sf::Sprite head;
-            sf::Texture head_texture;
-            head_texture.loadFromFile("../assets/mariohead.png");
-            head.setTexture(head_texture);
-            head.setPosition(sf::Vector2f(i*50, 90));
-            window_->draw(head);
-        }
-
-    
+    score_board_->printLives(window);
+    score_board_->printScore(window);  
 }
 
 bool Game::checkFloorIntersection(const sf::IntRect& obj, const sf::IntRect& floor)
