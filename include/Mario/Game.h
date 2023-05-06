@@ -7,6 +7,7 @@
 #include "Mario/Mario.h"
 #include "Mario/Object.h"
 #include "Mario/Background.h"
+#include "Mario/ScoreBoard.h"
 
 class Game
 {
@@ -20,6 +21,7 @@ class Game
 
         Turtle* turtles_;
         Mario* mario_;
+        ScoreBoard* score_board_;
 
     public:
         Game(int speed);

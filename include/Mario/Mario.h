@@ -13,7 +13,9 @@ class Mario : public Object
     public:
         Mario(sf::RenderWindow *window);
         void move();
-        void jump(bool down);
+        void run(int speed, int direction);
+        void jump(bool down = false);
+        void slide();
         void fall(void);
         void loadTextures(void);
         void setLateralSpeed(float vx);

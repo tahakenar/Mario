@@ -34,6 +34,35 @@ void Mario::move()
     setPosition(goal_mario_pos);
 }
 
+void Mario::run(int speed, int direction)
+{
+    this->setLateralSpeed(speed);
+    this->setHeading(direction);
+    this->setState(MarioStates::RUN);
+    this->updateTexture();
+}
+
+
+void Mario::jump(bool down)
+{
+    if (down)
+    {}
+    else
+    {
+            this->setVerticalSpeed(MARIO_JUMP_SPEED);
+            this->setState(MarioStates::JUMP);
+            this->updateTexture();
+    }
+}
+
+void Mario::slide()
+{
+    this->lateralSpeedDecay();
+    this->setState(MarioStates::SLIDE);
+    this->updateTexture();
+}
+
+
 void Mario::setLateralSpeed(float vx)
 {
     vx_ = vx;
@@ -47,11 +76,11 @@ void Mario::lateralSpeedDecay()
     }
     else if (vx_ > 0)
     {
-        vx_ -= 0.25;
+        vx_ -= SLIDE_DECAYING_STEP;
     }
     else
     {
-        vx_ += 0.25;
+        vx_ += SLIDE_DECAYING_STEP;
     }
 }
 
@@ -63,7 +92,7 @@ void Mario::setVerticalSpeed(float vy)
 void Mario::gravityEffect(bool set)
 {
     if (set)
-        vy_ = vy_ >= 30 ? -MARIO_JUMP_SPEED : vy_ + GRAVITY_COEFFICIENT;
+        vy_ = vy_ >= -MARIO_JUMP_SPEED ? -MARIO_JUMP_SPEED : vy_ + GRAVITY_COEFFICIENT;
     else
         vy_ = 0;
 }
@@ -84,6 +113,7 @@ void Mario::setHeading(int heading)
 }
 
 
+
 void Mario::setState(int state)
 {
     state_ = state;
@@ -98,11 +128,11 @@ void Mario::updateTexture()
         sprite_.setTexture(textures_[0]);
     if (state_ == MarioStates::RUN)
     {
+        // TODO: Better solution
         animation_change_cnt++;
         if (animation_change_cnt == 4)
         {
             sprite_.setTexture(textures_[run_states+1]);
-            spdlog::info("Run state: " + std::to_string(run_states+1));
             run_states++;
             animation_change_cnt = 0;
         }
@@ -114,6 +144,8 @@ void Mario::updateTexture()
         sprite_.setTexture(textures_[5]);
     if (state_ == MarioStates::SLIDE)
         sprite_.setTexture(textures_[4]);
+    if (state_ == MarioStates::FALL)
+        sprite_.setTexture(textures_[6]);
 
     if (heading_ == HEADING_LEFT)
     {

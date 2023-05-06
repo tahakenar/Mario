@@ -3,9 +3,8 @@
 
 Game::Game(int speed): speed_(speed)
 {
-    window_ = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT),"Mario");
+    window_ = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT),"Sahane Kazim");
 
-    // TODO: create background
     floor_ = new Background(FLOOR_ASSET_PATH, FLOOR_WIDTH, FLOOR_HEIGHT);
     floor_->setPosition(sf::Vector2f(FLOOR_X, FLOOR_Y));
 
@@ -46,12 +45,16 @@ Game::Game(int speed): speed_(speed)
 
     turtles_ = new Turtle(window_);
 
+    score_board_ = new ScoreBoard();
+
+
+    
+
 }
 
 void Game::update(void)
 {
     static bool event_flag = false;
-    static bool slide = false;
     static bool up = false;
     static bool left = false;
     static bool right = false;
@@ -60,6 +63,12 @@ void Game::update(void)
 
     while (window_->isOpen())
     {
+
+        window_->clear();
+        this->drawBackground(*window_);
+
+
+
         // spdlog::info("running");
         sf::Event event;
         if (window_->pollEvent(event))
@@ -69,8 +78,7 @@ void Game::update(void)
             
             if (event.type == sf::Event::KeyPressed)
             {
-                slide = false;
-                spdlog::info("Key pressed");
+                // spdlog::info("Key pressed");
                 switch (event.key.code)
                 {
                 case  sf::Keyboard::Up:
@@ -88,6 +96,9 @@ void Game::update(void)
                 case sf::Keyboard::Down:
                     // spdlog::info("Down button pressed");
                     down = true;
+                    // TESTING PURPOSES
+                    score_board_->setScore(std::stoi(score_board_->getScore())+1);
+                    score_board_->setLives(score_board_->getLives()-1);
                     break;
                 default:
                     break;
@@ -99,11 +110,9 @@ void Game::update(void)
                 switch (event.key.code)
                 {
                 case sf::Keyboard::Left:
-                    slide = true;
                     left = false;
                     break;
                 case sf::Keyboard::Right:
-                    slide = true;
                     right = false;
                     break;
                 default:
@@ -114,33 +123,19 @@ void Game::update(void)
 
         if (left && onFloor(mario_))
         {
-            mario_->setLateralSpeed(MARIO_LATERAL_LEFT_SPEED);
-            mario_->setHeading(HEADING_LEFT);
-            mario_->setState(MarioStates::RUN);
-            mario_->updateTexture();
-            // spdlog::info("Mario runs left");
+            mario_->run(MARIO_LATERAL_LEFT_SPEED, HEADING_LEFT);
         }
         if (right && onFloor(mario_))
         {
-            mario_->setLateralSpeed(MARIO_LATERAL_RIGHT_SPEED);
-            mario_->setHeading(HEADING_RIGHT);
-            mario_->setState(MarioStates::RUN);
-            mario_->updateTexture();
-            // spdlog::info("Mario runs right");
+            mario_->run(MARIO_LATERAL_RIGHT_SPEED, HEADING_RIGHT);
         }
         if (up && onFloor(mario_))
         {
-            mario_->setVerticalSpeed(MARIO_JUMP_SPEED);
-            mario_->setState(MarioStates::JUMP);
-            mario_->updateTexture();
-            // spdlog::info("Mario jumps");
+            mario_->jump();
         }
-        if (!(left) && !(right) && onFloor(mario_) && !(up) && mario_->getSpeedX() != 0 && slide)
+        if (!(left) && !(right) && onFloor(mario_) && !(up) && mario_->getSpeedX() != 0)
         {
-            mario_->lateralSpeedDecay();
-            spdlog::warn("Imma slidin");
-            mario_->setState(MarioStates::SLIDE);
-            mario_->updateTexture();
+            mario_->slide();
         }
         if (!(up) && onFloor(mario_) && mario_->getSpeedX() == 0)
         {
@@ -172,11 +167,19 @@ void Game::update(void)
             mario_->gravityEffect(true);
             mario_->setVerticalSpeed(5);
             spdlog::info("Mario hits ceiling");
+            // mario_->logPosition();
+            // mario_->logSpeed();
         }
         
-        window_->clear();
 
-        this->drawBackground(*window_);
+        if (score_board_->getLives() == 0)
+        {
+            mario_->setState(MarioStates::FALL);
+            mario_->updateTexture();
+            // sf::sleep(sf::milliseconds(10000));
+
+            spdlog::error("died");
+        }
         mario_->draw(*window_);
 
         window_->display();
@@ -202,6 +205,32 @@ void Game::drawBackground(sf::RenderWindow &window)
     pipes_[1]->draw(window_);
     pipes_[2]->draw(window_);
     pipes_[3]->draw(window_);
+
+    // TESTING PURPOSES ONLY
+
+    sf::Font font;
+    font.loadFromFile("../assets/font.ttf");
+    sf::Text text;
+    text.setFont(font);
+    text.setString(score_board_->getScore());
+    text.setCharacterSize(60);
+    text.setFillColor(sf::Color::White);
+    window_->draw(text);
+
+    // TESTING PURPOSES LIVES
+        int lives = score_board_->getLives();
+
+        for (int i = 0; i < lives; i++)
+        {
+            sf::Sprite head;
+            sf::Texture head_texture;
+            head_texture.loadFromFile("../assets/mariohead.png");
+            head.setTexture(head_texture);
+            head.setPosition(sf::Vector2f(i*50, 90));
+            window_->draw(head);
+        }
+
+    
 }
 
 bool Game::checkFloorIntersection(const sf::IntRect& obj, const sf::IntRect& floor)
@@ -237,6 +266,7 @@ bool Game::hitCeiling(Object *obj)
             return true;
         }
     }
+
     return false;
 }
 
