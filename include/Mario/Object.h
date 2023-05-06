@@ -15,6 +15,8 @@ class Object
         sf::RenderWindow *window_;
         int state_;
         int heading_;
+        Object* next_;
+        friend class Game;
     public:
         Object(sf::RenderWindow *window);
         void setPosition(sf::Vector2f pos);

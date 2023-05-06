@@ -37,6 +37,7 @@ class Game
         bool checkCeilingIntersection(const sf::IntRect& obj, const sf::IntRect& ceiling);
         bool onFloor(Object *obj);
         bool hitCeiling(Object *obj);
+        Turtle* addTurtle(void);
         // bool checkCollision(Turtle *t, Mario *m, int &side);
 };
 

@@ -39,11 +39,12 @@ Game::Game(int speed): speed_(speed)
 
     // Initialize Mario
     mario_ = new Mario(window_);
-    mario_->setPosition(sf::Vector2f(WINDOW_WIDTH/2, FLOOR_Y-MARIO_HEIGHT));
+    mario_->setPosition(sf::Vector2f(WINDOW_WIDTH/2, FLOOR_Y-200));
 
     // TODO: Initialize turtles
+    turtles_ = addTurtle();
+    turtles_[0].setPosition(sf::Vector2f(WINDOW_WIDTH/4, FLOOR_Y-MARIO_HEIGHT));
 
-    // turtles_ = new Turtle(window_);
 
     score_board_ = new ScoreBoard();
 
@@ -53,7 +54,6 @@ Game::Game(int speed): speed_(speed)
 
 void Game::play(void)
 {
-    std::cout << "Mario top play: " << mario_->boundingBox().top << std::endl;
     static bool up = false;
     static bool left = false;
     static bool right = false;
@@ -61,6 +61,7 @@ void Game::play(void)
     mario_fall_flag_ = true;
 
     this->drawBackground(*window_);
+    turtles_[0].draw(*window_);
 
     sf::Event event;
     if (window_->pollEvent(event))
@@ -155,6 +156,7 @@ void Game::play(void)
 
 
     mario_->draw(*window_);
+    turtles_[0].draw(*window_);
     up = false;
     down = false;
 }
@@ -252,10 +254,19 @@ void Game::die()
 
 void Game::gameOver(void)
 {
-   sf::Font font;
+    sf::Font font;
     font.loadFromFile(FONT_PATH);
     sf::Text header;
     sf::Text score;
+
+
+    sf::Text restart_button;
+    restart_button.setFont(font);
+    restart_button.setCharacterSize(60);
+    restart_button.setString("Replay!");
+    restart_button.setFillColor(sf::Color::Green);
+    restart_button.setOrigin(sf::Vector2f(restart_button.getLocalBounds().width/2.f, 0));
+    restart_button.setPosition(sf::Vector2f(WINDOW_WIDTH/2.f,600.f));
 
     header.setFont(font);
     score.setFont(font);
@@ -272,12 +283,33 @@ void Game::gameOver(void)
 
     window_->draw(header);
     window_->draw(score);
+    window_->draw(restart_button);
 
     sf::Event event;
     if (window_->pollEvent(event))
     {
         if (event.type == sf::Event::Closed)
             window_->close();
+        if (event.type == sf::Event::MouseButtonPressed)
+        {
+            if (event.mouseButton.button ==  sf::Mouse::Left)
+            {
+                sf::Vector2i localPosition = sf::Mouse::getPosition(*window_);
+                if (restart_button.getGlobalBounds().contains(static_cast<sf::Vector2f>(localPosition)))
+                {
+                    game_state_ = GameStates::PLAY;
+                    score_board_->setLives(3);
+                    score_board_->setScore(0);
+                    mario_->setState(MarioStates::STILL);
+                    mario_->updateTexture();
+                    mario_->setPosition(sf::Vector2f(WINDOW_WIDTH/2, FLOOR_Y-200));
+                    mario_->setLateralSpeed(0);
+                    mario_->setVerticalSpeed(0);
+                    game_state_ = GameStates::PLAY;
+                }
+            }
+            
+        }
     }
 }
 
@@ -383,5 +415,12 @@ bool Game::onFloor(Object *obj)
     {
         return false;
     }
+}
 
+Turtle* Game::addTurtle(void)
+{
+    Turtle* turtle = new Turtle(window_);
+    turtle->next_ = turtles_;
+    turtles_ = turtle;
+    return turtle;
 }
