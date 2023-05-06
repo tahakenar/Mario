@@ -48,15 +48,17 @@ Game::Game(int speed): speed_(speed)
     score_board_ = new ScoreBoard();
 
     game_state_ = GameStates::MENU;
+    mario_fall_flag_ = true;
 }
 
 void Game::play(void)
 {
-
+    std::cout << "Mario top play: " << mario_->boundingBox().top << std::endl;
     static bool up = false;
     static bool left = false;
     static bool right = false;
     static bool down = false;
+    mario_fall_flag_ = true;
 
     this->drawBackground(*window_);
 
@@ -151,8 +153,6 @@ void Game::play(void)
         mario_->setVerticalSpeed(5);
     }
 
-    if (score_board_->getLives() == 0)
-        game_state_ = GameStates::GAMEOVER;
 
     mario_->draw(*window_);
     up = false;
@@ -210,12 +210,21 @@ void Game::menu(void)
     }
 }
 
-void Game::die(void)
+void Game::die()
 {
-    
+    window_->clear();
+    this->drawBackground(*window_);
     mario_->setState(MarioStates::FALL);
     mario_->updateTexture();
-    spdlog::warn("Ouch");
+    mario_->gravityEffect(true);
+    
+    if (mario_fall_flag_)
+    {
+        mario_->fall();
+        mario_fall_flag_ = false;
+    }
+    mario_->move();
+    mario_->draw(*window_);
 
     sf::Event event;
     if (window_->pollEvent(event))
@@ -224,6 +233,21 @@ void Game::die(void)
             window_->close();
     }
 
+    if (mario_->boundingBox().top >= FLOOR_Y)
+    {
+        if (score_board_->getLives() > 0)
+        {
+            mario_->setState(MarioStates::STILL);
+            mario_->setPosition(sf::Vector2f(WINDOW_WIDTH/2, FLOOR_Y-200));
+            mario_->updateTexture();
+            mario_->setLateralSpeed(0);
+            mario_->setVerticalSpeed(0);
+            mario_->draw(*window_);
+            game_state_ = GameStates::PLAY;
+        }
+        else
+            game_state_ = GameStates::GAMEOVER;
+    }
 }
 
 void Game::gameOver(void)
@@ -272,16 +296,7 @@ void Game::update(void)
             this->play();
         
         if (game_state_ == GameStates::DIED)
-        {
-            // TODO: Falling animation. If no lives
-            if (score_board_->getLives() > 0)
-            {
-                this->die();
-                game_state_ = GameStates::PLAY;
-            }
-            else
-                game_state_ = GameStates::GAMEOVER;
-        }
+            this->die();
 
         if (game_state_ == GameStates::GAMEOVER)
             this->gameOver();

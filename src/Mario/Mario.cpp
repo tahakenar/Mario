@@ -46,13 +46,21 @@ void Mario::run(int speed, int direction)
 void Mario::jump(bool down)
 {
     if (down)
-    {}
+    { 
+    }
     else
     {
             this->setVerticalSpeed(MARIO_JUMP_SPEED);
             this->setState(MarioStates::JUMP);
             this->updateTexture();
     }
+}
+
+void Mario::fall(void)
+{
+    this->setVerticalSpeed(MARIO_JUMP_SPEED);
+    this->setState(MarioStates::FALL);
+    this->updateTexture();  
 }
 
 void Mario::slide()

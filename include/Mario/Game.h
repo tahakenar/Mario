@@ -14,6 +14,7 @@ class Game
     private:
         int speed_;
         int game_state_;
+        bool mario_fall_flag_;
 
         sf::RenderWindow* window_;
         Background* floor_;
@@ -28,7 +29,7 @@ class Game
         Game(int speed);
         void play(void);
         void menu(void);
-        void die(void);
+        void die();
         void gameOver(void);
         void update(void);
         void drawBackground(sf::RenderWindow &window);
