@@ -13,6 +13,7 @@ class Game
 {
     private:
         int speed_;
+        int game_state_;
 
         sf::RenderWindow* window_;
         Background* floor_;
@@ -25,6 +26,10 @@ class Game
 
     public:
         Game(int speed);
+        void play(void);
+        void menu(void);
+        void die(void);
+        void gameOver(void);
         void update(void);
         void drawBackground(sf::RenderWindow &window);
         bool checkFloorIntersection(const sf::IntRect& obj, const sf::IntRect& floor);

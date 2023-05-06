@@ -108,7 +108,6 @@ void Mario::setHeading(int heading)
     {
         heading_ = heading;
         heading_changed_ = true;
-        spdlog::info("Heading changed");
     }
 }
 

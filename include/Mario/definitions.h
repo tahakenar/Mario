@@ -114,4 +114,12 @@ enum MarioStates
     SLIDE
 };
 
+enum GameStates
+{
+    MENU,
+    PLAY,
+    DIED,
+    GAMEOVER
+};
+
 #endif
