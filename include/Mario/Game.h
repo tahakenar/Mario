@@ -43,7 +43,7 @@ class Game
         bool onFloor(Object *obj);
         bool hitCeiling(Object *obj);
         Turtle* addTurtle(void);
-        // bool checkCollision(Turtle *t, Mario *m, int &side);
+        bool checkCollision(Turtle *t, Mario *m, int &side);
 };
 
 #endif

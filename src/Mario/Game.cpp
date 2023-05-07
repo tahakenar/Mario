@@ -385,7 +385,7 @@ bool Game::checkFloorIntersection(const sf::IntRect& obj, const sf::IntRect& flo
 
     if (abs(floor.top - (obj.top + obj.height)) < FLOOR_INTERACTION_TRESHOLD)
     {
-        if ((mid_point > floor.left) && (mid_point < floor.width + floor.left))
+        if ((obj.left + obj.width > floor.left) && (obj.left < floor.width + floor.left))
             return true;
     }
     return false;
@@ -395,7 +395,7 @@ bool Game::checkCeilingIntersection(const sf::IntRect& obj, const sf::IntRect& c
 {
     int mid_point = obj.left + obj.width/2;
     if (abs(ceiling.top + ceiling.height - obj.top) < CEILING_INTERACTION_TRESHOLD)
-            if ((mid_point > ceiling.left) && (mid_point < ceiling.width + ceiling.left))
+            if ((obj.left + obj.width > ceiling.left) && (obj.left  < ceiling.width + ceiling.left))
                 return true;
     else
         return false;
@@ -448,4 +448,10 @@ Turtle* Game::addTurtle(void)
     turtle->next_ = turtles_;
     turtles_ = turtle;
     return turtle;
+}
+
+bool Game::checkCollision(Turtle *t, Mario *m, int &side)
+{
+
+    return false;
 }

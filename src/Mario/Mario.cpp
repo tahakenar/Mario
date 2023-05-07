@@ -45,6 +45,7 @@ void Mario::jump(bool down)
 {
     if (down)
     {
+        vy_ = vy_ >= -MARIO_JUMP_SPEED ? -MARIO_JUMP_SPEED : vy_ + GRAVITY_COEFFICIENT;
     }
     else
     {

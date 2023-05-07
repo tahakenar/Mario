@@ -30,7 +30,8 @@ void Turtle::move()
     sf::Vector2f goal_turtle_pos = this->getPosition();
     goal_turtle_pos.x += vx_;
     goal_turtle_pos.y += vy_;
-    setPosition(goal_turtle_pos);
+    this->setPosition(goal_turtle_pos);
+    this->checkToTeleport();
 
     elapsed_time_ = clock_.getElapsedTime();
     if (elapsed_time_.asSeconds() > 2)
@@ -101,11 +102,7 @@ void Turtle::gravityEffect(bool set)
 
 void Turtle::setHeading(int heading)
 {
-    if (heading_ != heading)
-    {
-        heading_ = heading;
-        heading_changed_ = true;
-    }
+    heading_ = heading;
 }
 
 
@@ -150,3 +147,26 @@ void Turtle::updateTexture()
 
 }
 
+
+void Turtle::checkToTeleport()
+{
+    if (pos_.y > 860)
+    {
+        if (pos_.x < (PIPE_X_LEFT + PIPE_WIDTH))
+            this->teleport(LEFT_PIPE);
+        if (pos_.x > (PIPE_X_RIGHT - MARIO_WIDTH))
+            this->teleport(RIGHT_PIPE);
+    }
+}
+
+void Turtle::teleport(int pipe)
+{
+    if (pipe == LEFT_PIPE)
+    {
+        this->setPosition(sf::Vector2f(PIPE_S_X_LEFT + PIPE_S_WIDTH, 200));
+    }
+    if (pipe == RIGHT_PIPE)
+    {
+        this->setPosition(sf::Vector2f(PIPE_S_X_RIGHT - MARIO_WIDTH, 200));
+    }
+}

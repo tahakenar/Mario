@@ -26,6 +26,8 @@ class Turtle : public Object
         void setHeading(int heading);
         void setState(int state);
         void updateTexture();
+        void checkToTeleport();
+        void teleport(int pipe);
 };
 
 
