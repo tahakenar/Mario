@@ -16,6 +16,11 @@ class Game
         int game_state_;
         bool mario_fall_flag_;
 
+        bool up_;
+        bool down_;
+        bool left_;
+        bool right_;
+
         sf::RenderWindow* window_;
         Background* floor_;
         Background* bricks_[7];

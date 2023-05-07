@@ -41,9 +41,16 @@ Game::Game(int speed): speed_(speed)
     mario_ = new Mario(window_);
     mario_->setPosition(sf::Vector2f(WINDOW_WIDTH/2, FLOOR_Y-200));
 
+    down_ = false;
+    up_ = false;
+    left_ = false;
+    right_ = false;
+
     // TODO: Initialize turtles
-    turtles_ = addTurtle();
-    turtles_[0].setPosition(sf::Vector2f(WINDOW_WIDTH/4, FLOOR_Y-MARIO_HEIGHT));
+    // turtles_ = addTurtle();
+    // turtles_[0].setPosition(sf::Vector2f(WINDOW_WIDTH/4, FLOOR_Y-MARIO_HEIGHT));
+    turtles_ = new Turtle(window_); 
+    turtles_->setPosition(sf::Vector2f(WINDOW_WIDTH/4, 270));
 
 
     score_board_ = new ScoreBoard();
@@ -54,14 +61,13 @@ Game::Game(int speed): speed_(speed)
 
 void Game::play(void)
 {
-    static bool up = false;
-    static bool left = false;
-    static bool right = false;
-    static bool down = false;
+    // static bool up = false;
+    // static bool left = false;
+    // static bool right = false;
+    // static bool down = false;
     mario_fall_flag_ = true;
 
     this->drawBackground(*window_);
-    turtles_[0].draw(*window_);
 
     sf::Event event;
     if (window_->pollEvent(event))
@@ -76,19 +82,19 @@ void Game::play(void)
             {
             case  sf::Keyboard::Up:
                 // spdlog::info("Up button pressed");
-                up = true;
+                up_ = true;
                 break;
             case sf::Keyboard::Left:
                 // spdlog::info("Left button pressed");
-                left = true;
+                left_ = true;
                 break;
             case sf::Keyboard::Right:
                 // spdlog::info("Right button pressed");
-                right = true;
+                right_ = true;
                 break;
             case sf::Keyboard::Down:
                 // spdlog::info("Down button pressed");
-                down = true;
+                down_ = true;
                 // TESTING PURPOSES
                 score_board_->setScore(std::stoi(score_board_->getScore())+1);
                 score_board_->setLives(score_board_->getLives()-1);
@@ -104,10 +110,10 @@ void Game::play(void)
             switch (event.key.code)
             {
             case sf::Keyboard::Left:
-                left = false;
+                left_ = false;
                 break;
             case sf::Keyboard::Right:
-                right = false;
+                right_ = false;
                 break;
             default:
                 break;
@@ -115,23 +121,23 @@ void Game::play(void)
         }
     }
 
-    if (left && onFloor(mario_))
+    if (left_ && onFloor(mario_))
     {
         mario_->run(MARIO_LATERAL_LEFT_SPEED, HEADING_LEFT);
     }
-    if (right && onFloor(mario_))
+    if (right_ && onFloor(mario_))
     {
         mario_->run(MARIO_LATERAL_RIGHT_SPEED, HEADING_RIGHT);
     }
-    if (up && onFloor(mario_))
+    if (up_ && onFloor(mario_))
     {
         mario_->jump();
     }
-    if (!(left) && !(right) && onFloor(mario_) && !(up) && mario_->getSpeedX() != 0)
+    if (!(left_) && !(right_) && onFloor(mario_) && !(up_) && mario_->getSpeedX() != 0)
     {
         mario_->slide();
     }
-    if (!(up) && onFloor(mario_) && mario_->getSpeedX() == 0)
+    if (!(up_) && onFloor(mario_) && mario_->getSpeedX() == 0)
     {
         mario_->setState(MarioStates::STILL);
         mario_->updateTexture();
@@ -154,11 +160,21 @@ void Game::play(void)
         mario_->setVerticalSpeed(5);
     }
 
+    turtles_->move();
+    if (onFloor(turtles_))
+    {
+        turtles_->gravityEffect(false);
+    }
+    else
+    {
+        turtles_->gravityEffect(true);
+    }
+
 
     mario_->draw(*window_);
-    turtles_[0].draw(*window_);
-    up = false;
-    down = false;
+    turtles_->draw(*window_);
+    up_ = false;
+    down_ = false;
 }
 
 void Game::menu(void)
@@ -219,14 +235,20 @@ void Game::die()
     mario_->setState(MarioStates::FALL);
     mario_->updateTexture();
     mario_->gravityEffect(true);
+
+
     
     if (mario_fall_flag_)
     {
+        turtles_->fall();
         mario_->fall();
         mario_fall_flag_ = false;
     }
     mario_->move();
     mario_->draw(*window_);
+    turtles_->move();
+    turtles_->gravityEffect(true);
+    turtles_->draw(*window_);
 
     sf::Event event;
     if (window_->pollEvent(event))
@@ -245,6 +267,8 @@ void Game::die()
             mario_->setLateralSpeed(0);
             mario_->setVerticalSpeed(0);
             mario_->draw(*window_);
+            left_ = false;
+            right_ = false;
             game_state_ = GameStates::PLAY;
         }
         else
@@ -305,6 +329,8 @@ void Game::gameOver(void)
                     mario_->setPosition(sf::Vector2f(WINDOW_WIDTH/2, FLOOR_Y-200));
                     mario_->setLateralSpeed(0);
                     mario_->setVerticalSpeed(0);
+                    left_ = false;
+                    right_ = false;
                     game_state_ = GameStates::PLAY;
                 }
             }
@@ -332,7 +358,6 @@ void Game::update(void)
 
         if (game_state_ == GameStates::GAMEOVER)
             this->gameOver();
-
 
         window_->display();
         sf::sleep(sf::milliseconds(10000/speed_));

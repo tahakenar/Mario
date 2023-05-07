@@ -6,7 +6,6 @@
 #define WINDOW_HEIGHT 1024
 #define GAME_SPEED 400
 
-
 // PATHS ETC.
 #define ASSET_PATH "../assets"
 #define BRICK_ASSET_PATH ASSET_PATH  "/brick.png"
@@ -103,7 +102,7 @@
 #define MARIO_MAX_FALL_SPEED 30
 #define SLIDE_DECAYING_STEP 0.25;
 
-// MARIO STATES
+// STATES
 
 enum MarioStates
 {
@@ -112,6 +111,12 @@ enum MarioStates
     JUMP,
     FALL,
     SLIDE
+};
+
+enum TurtleStates
+{
+    WALK,
+    DIE
 };
 
 enum GameStates

@@ -11,8 +11,6 @@ Mario::Mario(sf::RenderWindow *window): Object(window)
     this->loadTextures();
 
     sprite_.setTexture(textures_[0]);   // initially
-    // sprite_.setOrigin(sprite_.getLocalBounds().width/2.f,sprite_.getLocalBounds().height);
-    // sprite_.setOrigin(sprite_.getGlobalBounds().width / 2.f, sprite_.getGlobalBounds().height / 2.f);
 }
 
 void Mario::loadTextures(void)
@@ -46,7 +44,7 @@ void Mario::run(int speed, int direction)
 void Mario::jump(bool down)
 {
     if (down)
-    { 
+    {
     }
     else
     {
@@ -118,7 +116,6 @@ void Mario::setHeading(int heading)
         heading_changed_ = true;
     }
 }
-
 
 
 void Mario::setState(int state)

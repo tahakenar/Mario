@@ -9,7 +9,6 @@
 class Background
 {
     private:
-
         int width_;
         int height_;
         sf::Texture texture_;
