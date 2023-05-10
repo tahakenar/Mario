@@ -170,6 +170,14 @@ void Game::play(void)
         turtles_->gravityEffect(true);
     }
 
+    int up = 3;
+    if (this->checkCollision(turtles_, mario_, up))
+    {
+        score_board_->setScore(std::stoi(score_board_->getScore())+1);
+        score_board_->setLives(score_board_->getLives()-1);
+        game_state_ = GameStates::DIED;     
+    }
+    
 
     mario_->draw(*window_);
     turtles_->draw(*window_);
@@ -240,14 +248,14 @@ void Game::die()
     
     if (mario_fall_flag_)
     {
-        turtles_->fall();
+        // turtles_->fall();
         mario_->fall();
         mario_fall_flag_ = false;
     }
     mario_->move();
     mario_->draw(*window_);
     turtles_->move();
-    turtles_->gravityEffect(true);
+    // turtles_->gravityEffect(true);
     turtles_->draw(*window_);
 
     sf::Event event;
@@ -452,6 +460,31 @@ Turtle* Game::addTurtle(void)
 
 bool Game::checkCollision(Turtle *t, Mario *m, int &side)
 {
+
+    sf::IntRect mario_bb = m->boundingBox();
+    sf::IntRect turtle_bb = t->boundingBox();
+
+// L+W > Lt && L < Lt + Wt
+
+// || 
+
+// L < Lt+Wt && L+W > Lt
+
+    if (side == UP)
+    {
+        // if (abs(mario_bb.left - (turtle_bb.left + turtle_bb.width)) < 65
+        // && abs((mario_bb.left + mario_bb.width) - turtle_bb.left) < 65)
+        if ((mario_bb.left + mario_bb.width > turtle_bb.left && mario_bb.left < turtle_bb.left + turtle_bb.width) ||
+        (mario_bb.left < turtle_bb.left + turtle_bb.width && mario_bb.left + mario_bb.width > turtle_bb.left))
+        {
+            if (abs(mario_bb.top + mario_bb.height - turtle_bb.top - turtle_bb.height) < 10)
+                return true;
+        }
+    }
+    else
+    {
+
+    }
 
     return false;
 }
