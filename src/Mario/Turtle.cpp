@@ -111,6 +111,12 @@ void Turtle::setState(int state)
     state_ = state;
 }
 
+int Turtle::getState()
+{
+    return state_;
+}
+
+
 void Turtle::updateTexture()
 {
     static int walk_states = 0;

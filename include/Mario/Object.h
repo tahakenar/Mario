@@ -14,7 +14,6 @@ class Object
         sf::Vector2f pos_;
         sf::RenderWindow *window_;
         int state_;
-        // TODO: Use heading
         int heading_;
         Object* next_;
         friend class Game;

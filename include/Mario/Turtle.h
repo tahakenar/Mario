@@ -25,6 +25,7 @@ class Turtle : public Object
         void gravityEffect(bool set);
         void setHeading(int heading);
         void setState(int state);
+        int getState();
         void updateTexture();
         void checkToTeleport();
         void teleport(int pipe);

@@ -61,13 +61,11 @@ Game::Game(int speed): speed_(speed)
 
 void Game::play(void)
 {
-    // static bool up = false;
-    // static bool left = false;
-    // static bool right = false;
-    // static bool down = false;
     mario_fall_flag_ = true;
 
     this->drawBackground(*window_);
+
+
 
     sf::Event event;
     if (window_->pollEvent(event))
@@ -96,7 +94,7 @@ void Game::play(void)
                 // spdlog::info("Down button pressed");
                 down_ = true;
                 // TESTING PURPOSES
-                score_board_->setScore(std::stoi(score_board_->getScore())+1);
+                // score_board_->setScore(std::stoi(score_board_->getScore())+1);
                 score_board_->setLives(score_board_->getLives()-1);
                 game_state_ = GameStates::DIED;
                 break;
@@ -171,9 +169,17 @@ void Game::play(void)
     }
 
     int up = 3;
-    if (this->checkCollision(turtles_, mario_, up))
+    if (this->checkCollision(turtles_, mario_, up) && !(onFloor(mario_)))
     {
-        score_board_->setScore(std::stoi(score_board_->getScore())+1);
+        score_board_->setScore(std::stoi(score_board_->getScore())+100);
+        mario_->setVerticalSpeed(-10);
+        turtles_->fall();
+        turtles_->setLateralSpeed(0);
+    }
+    // DOWN
+    int lateral = 2;
+    if (this->checkCollision(turtles_, mario_, lateral) && onFloor(mario_))
+    {
         score_board_->setLives(score_board_->getLives()-1);
         game_state_ = GameStates::DIED;     
     }
@@ -235,6 +241,8 @@ void Game::menu(void)
         }
     }
 }
+
+
 
 void Game::die()
 {
@@ -464,27 +472,18 @@ bool Game::checkCollision(Turtle *t, Mario *m, int &side)
     sf::IntRect mario_bb = m->boundingBox();
     sf::IntRect turtle_bb = t->boundingBox();
 
-// L+W > Lt && L < Lt + Wt
-
-// || 
-
-// L < Lt+Wt && L+W > Lt
-
-    if (side == UP)
+    if ((mario_bb.left + mario_bb.width > turtle_bb.left && mario_bb.left < turtle_bb.left + turtle_bb.width) ||
+    (mario_bb.left < turtle_bb.left + turtle_bb.width && mario_bb.left + mario_bb.width > turtle_bb.left))
     {
-        // if (abs(mario_bb.left - (turtle_bb.left + turtle_bb.width)) < 65
-        // && abs((mario_bb.left + mario_bb.width) - turtle_bb.left) < 65)
-        if ((mario_bb.left + mario_bb.width > turtle_bb.left && mario_bb.left < turtle_bb.left + turtle_bb.width) ||
-        (mario_bb.left < turtle_bb.left + turtle_bb.width && mario_bb.left + mario_bb.width > turtle_bb.left))
+        if (abs((mario_bb.top + mario_bb.height) - (turtle_bb.top)) < 10 && side == UP)
         {
-            if (abs(mario_bb.top + mario_bb.height - turtle_bb.top - turtle_bb.height) < 10)
-                return true;
+            return true;
         }
-    }
-    else
-    {
+        if (mario_bb.top + mario_bb.height == turtle_bb.top + turtle_bb.height && side != UP)
+        {
+            return true;
+        }
 
     }
-
     return false;
 }
