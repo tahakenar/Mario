@@ -3,6 +3,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 project(mario)
 
+set(CMAKE_TOOLCHAIN_FILE toolchain.cmake)
+
 find_package(SFML COMPONENTS graphics window system network audio REQUIRED) 
 find_package(spdlog REQUIRED)
 

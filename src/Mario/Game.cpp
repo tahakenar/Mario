@@ -56,13 +56,153 @@ Game::Game(int speed): speed_(speed)
     score_board_ = new ScoreBoard();
 
     game_state_ = GameStates::MENU;
-    mario_fall_flag_ = true;
+}
+
+void Game::handleMarioEvents()
+{
+    if (game_state_ == GameStates::PLAY)
+    {
+        mario_->setFallFlag(true);
+
+        if (left_ && onFloor(mario_))
+        {
+            mario_->run(MARIO_LATERAL_LEFT_SPEED, HEADING_LEFT);
+        }
+        if (right_ && onFloor(mario_))
+        {
+            mario_->run(MARIO_LATERAL_RIGHT_SPEED, HEADING_RIGHT);
+        }
+        if (up_ && onFloor(mario_))
+        {
+            mario_->jump();
+        }
+        if (!(left_) && !(right_) && onFloor(mario_) && !(up_) && mario_->getSpeedX() != 0)
+        {
+            mario_->slide();
+        }
+        if (!(up_) && onFloor(mario_) && mario_->getSpeedX() == 0)
+        {
+            mario_->setState(MarioStates::STILL);
+            mario_->updateTexture();
+        }
+
+        mario_->move();
+
+        if (onFloor(mario_))
+        {
+            mario_->gravityEffect(false);
+        }
+        else 
+        {
+            mario_->gravityEffect(true);
+        }
+
+        if (hitCeiling(mario_))
+        {
+            mario_->gravityEffect(true);
+            mario_->setVerticalSpeed(5);
+        }
+    }
+    else if (game_state_ == GameStates::DIED)
+    {
+        mario_->setState(MarioStates::FALL);
+        mario_->updateTexture();
+
+        if (mario_->getFallFlag())
+        {
+            mario_->fall();
+            mario_->setFallFlag(false);
+        }
+        mario_->move();
+        mario_->gravityEffect(true);
+        if (mario_->boundingBox().top >= FLOOR_Y)
+        {
+            if (score_board_->getLives() > 0)
+            {
+                mario_->setState(MarioStates::STILL);
+                mario_->setPosition(sf::Vector2f(WINDOW_WIDTH/2, FLOOR_Y-200));
+                mario_->updateTexture();
+                mario_->setLateralSpeed(0);
+                mario_->setVerticalSpeed(0);
+                mario_->draw(*window_);
+                left_ = false;
+                right_ = false;
+                game_state_ = GameStates::PLAY;
+            }
+            else
+                game_state_ = GameStates::GAMEOVER;
+        }
+    }
+
+}
+
+void Game::handleTurtleEvents()
+{
+
+    if (turtles_->getState() == TurtleStates::DIE)
+    {
+        if (turtles_->getFallFlag())
+        {
+            turtles_->fall();
+            turtles_->setLateralSpeed(0);
+            turtles_->setFallFlag(false);
+        }
+        turtles_->move();
+        turtles_->gravityEffect(true);
+
+        //TODO: Delete turtle
+        if (turtles_->boundingBox().top >= FLOOR_Y)
+        {
+            turtles_->setState(TurtleStates::WALK);
+            turtles_->updateTexture();
+            turtles_->setVerticalSpeed(0);
+            turtles_->setPosition(sf::Vector2f(WINDOW_WIDTH/4, 270));
+        }
+    }
+    else
+    {
+        turtles_->setFallFlag(true);
+        turtles_->move();
+        if (onFloor(turtles_))
+        {
+            turtles_->gravityEffect(false);
+        }
+        else
+        {
+            turtles_->gravityEffect(true);
+        }
+    }
+
+
+
+}
+
+void Game::handleCharCollisions()
+{
+    if (game_state_ == GameStates::PLAY)
+    {
+        int up = 3;
+        if (this->checkCollision(turtles_, mario_, up) && !(onFloor(mario_)))
+        {
+            score_board_->setScore(std::stoi(score_board_->getScore())+100);
+            mario_->setVerticalSpeed(-10);
+            turtles_->setState(TurtleStates::DIE);
+            // mario_->setVerticalSpeed(-10);
+            // turtles_->fall();
+            // turtles_->setLateralSpeed(0);
+        }
+        // DOWN
+        int lateral = 2;
+        if (this->checkCollision(turtles_, mario_, lateral) && onFloor(mario_))
+        {
+            score_board_->setLives(score_board_->getLives()-1);
+            game_state_ = GameStates::DIED;     
+        }
+    }
 }
 
 void Game::play(void)
 {
-    mario_fall_flag_ = true;
-
     this->drawBackground(*window_);
 
 
@@ -119,70 +259,9 @@ void Game::play(void)
         }
     }
 
-    if (left_ && onFloor(mario_))
-    {
-        mario_->run(MARIO_LATERAL_LEFT_SPEED, HEADING_LEFT);
-    }
-    if (right_ && onFloor(mario_))
-    {
-        mario_->run(MARIO_LATERAL_RIGHT_SPEED, HEADING_RIGHT);
-    }
-    if (up_ && onFloor(mario_))
-    {
-        mario_->jump();
-    }
-    if (!(left_) && !(right_) && onFloor(mario_) && !(up_) && mario_->getSpeedX() != 0)
-    {
-        mario_->slide();
-    }
-    if (!(up_) && onFloor(mario_) && mario_->getSpeedX() == 0)
-    {
-        mario_->setState(MarioStates::STILL);
-        mario_->updateTexture();
-    }
-
-    mario_->move();
-
-    if (onFloor(mario_))
-    {
-        mario_->gravityEffect(false);
-    }
-    else 
-    {
-        mario_->gravityEffect(true);
-    }
-
-    if (hitCeiling(mario_))
-    {
-        mario_->gravityEffect(true);
-        mario_->setVerticalSpeed(5);
-    }
-
-    turtles_->move();
-    if (onFloor(turtles_))
-    {
-        turtles_->gravityEffect(false);
-    }
-    else
-    {
-        turtles_->gravityEffect(true);
-    }
-
-    int up = 3;
-    if (this->checkCollision(turtles_, mario_, up) && !(onFloor(mario_)))
-    {
-        score_board_->setScore(std::stoi(score_board_->getScore())+100);
-        mario_->setVerticalSpeed(-10);
-        turtles_->fall();
-        turtles_->setLateralSpeed(0);
-    }
-    // DOWN
-    int lateral = 2;
-    if (this->checkCollision(turtles_, mario_, lateral) && onFloor(mario_))
-    {
-        score_board_->setLives(score_board_->getLives()-1);
-        game_state_ = GameStates::DIED;     
-    }
+    this->handleCharCollisions();
+    this->handleMarioEvents();
+    this->handleTurtleEvents();
     
 
     mario_->draw(*window_);
@@ -239,56 +318,6 @@ void Game::menu(void)
             }
             
         }
-    }
-}
-
-
-
-void Game::die()
-{
-    window_->clear();
-    this->drawBackground(*window_);
-    mario_->setState(MarioStates::FALL);
-    mario_->updateTexture();
-    mario_->gravityEffect(true);
-
-
-    
-    if (mario_fall_flag_)
-    {
-        // turtles_->fall();
-        mario_->fall();
-        mario_fall_flag_ = false;
-    }
-    mario_->move();
-    mario_->draw(*window_);
-    turtles_->move();
-    // turtles_->gravityEffect(true);
-    turtles_->draw(*window_);
-
-    sf::Event event;
-    if (window_->pollEvent(event))
-    {
-        if (event.type == sf::Event::Closed)
-            window_->close();
-    }
-
-    if (mario_->boundingBox().top >= FLOOR_Y)
-    {
-        if (score_board_->getLives() > 0)
-        {
-            mario_->setState(MarioStates::STILL);
-            mario_->setPosition(sf::Vector2f(WINDOW_WIDTH/2, FLOOR_Y-200));
-            mario_->updateTexture();
-            mario_->setLateralSpeed(0);
-            mario_->setVerticalSpeed(0);
-            mario_->draw(*window_);
-            left_ = false;
-            right_ = false;
-            game_state_ = GameStates::PLAY;
-        }
-        else
-            game_state_ = GameStates::GAMEOVER;
     }
 }
 
@@ -366,12 +395,9 @@ void Game::update(void)
         if (game_state_ == GameStates::MENU)
             this->menu();
         
-        if (game_state_ == GameStates::PLAY)
+        if (game_state_ == GameStates::PLAY || game_state_ == GameStates::DIED)
             this->play();
         
-        if (game_state_ == GameStates::DIED)
-            this->die();
-
         if (game_state_ == GameStates::GAMEOVER)
             this->gameOver();
 
@@ -468,6 +494,9 @@ Turtle* Game::addTurtle(void)
 
 bool Game::checkCollision(Turtle *t, Mario *m, int &side)
 {
+
+    if (t->getState() == TurtleStates::DIE || m->getState() == MarioStates::FALL)
+        return false;
 
     sf::IntRect mario_bb = m->boundingBox();
     sf::IntRect turtle_bb = t->boundingBox();

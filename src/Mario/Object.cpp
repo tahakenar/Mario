@@ -1,7 +1,7 @@
 #include "Mario/Object.h"
 #include <iostream>
 
-Object::Object(sf::RenderWindow *window)
+Object::Object(sf::RenderWindow *window): fall_flag_(true)
 {
     window_ = window;
     state_ = 0;
@@ -38,6 +38,22 @@ sf::IntRect Object::boundingBox(void)
     sf::IntRect int_bounding_box = static_cast<sf::IntRect>(bounding_box);
     return int_bounding_box;
 }
+
+int Object::getState()
+{
+    return state_;
+}
+
+bool Object::getFallFlag()
+{
+    return fall_flag_;
+}
+
+void Object::setFallFlag(bool val)
+{
+    fall_flag_ = val;
+}
+
 
 void Object::draw(sf::RenderWindow &window)
 {

@@ -34,7 +34,9 @@ class Game
         Game(int speed);
         void play(void);
         void menu(void);
-        void die();
+        void handleMarioEvents();
+        void handleTurtleEvents();
+        void handleCharCollisions();
         void gameOver(void);
         void update(void);
         void drawBackground(sf::RenderWindow &window);
@@ -44,6 +46,7 @@ class Game
         bool hitCeiling(Object *obj);
         Turtle* addTurtle(void);
         bool checkCollision(Turtle *t, Mario *m, int &side);
+        // TODO: Handle mario & turtle events in functions
 };
 
 #endif

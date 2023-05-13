@@ -15,6 +15,7 @@ class Object
         sf::RenderWindow *window_;
         int state_;
         int heading_;
+        bool fall_flag_;
         Object* next_;
         friend class Game;
     public:
@@ -22,6 +23,9 @@ class Object
         void setPosition(sf::Vector2f pos);
         sf::Vector2f getPosition();
         sf::IntRect boundingBox(void);
+        int getState();
+        bool getFallFlag();
+        void setFallFlag(bool val);
         void draw(sf::RenderWindow &window);
         void move(void);
         void fall(void);
