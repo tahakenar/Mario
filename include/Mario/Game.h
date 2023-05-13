@@ -23,6 +23,9 @@ class Game
         bool left_;
         bool right_;
 
+        sf::Clock clock_; // handle random events & speed increase etc
+        sf::Time elapsed_time_;
+
         sf::RenderWindow* window_;
         Background* floor_;
         Background* bricks_[7];
@@ -45,7 +48,7 @@ class Game
         bool onFloor(Object *obj);
         bool hitCeiling(Object *obj);
 
-
+        void turtleSpawner(void);
         Turtle* addTurtle(void);
         void removeTurtle(Turtle* t);
         void drawTurtles(void);

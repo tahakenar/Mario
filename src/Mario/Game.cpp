@@ -7,7 +7,7 @@
 */
 
 
-Game::Game(int speed): speed_(speed), turtles_(nullptr)
+Game::Game(int speed): speed_(speed), turtles_(nullptr), spawned_turtle_cnt_(0), live_turtle_cnt_(0)
 {
     window_ = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT),"Sahane Kazim");
 
@@ -52,11 +52,11 @@ Game::Game(int speed): speed_(speed), turtles_(nullptr)
     left_ = false;
     right_ = false;
 
-    for (int i = 0; i < 5; i++)
-    {
-        Turtle* t = this->addTurtle();
-        t->setPosition(sf::Vector2f(WINDOW_WIDTH/4 + i*50, 250));
-    }
+    // for (int i = 0; i < 5; i++)
+    // {
+    //     Turtle* t = this->addTurtle();
+    //     t->setPosition(sf::Vector2f(WINDOW_WIDTH/4 + i*50, 250));
+    // }
 
     score_board_ = new ScoreBoard();
 
@@ -147,8 +147,6 @@ void Game::handleTurtles()
     int idx = 0;
     while (turtle)
     {
-        std::cout << turtle << std::endl;
-        spdlog::info("Idx: " + std::to_string(idx++));
         this->handleTurtleEvents(turtle);
         turtle = turtle->next_;
     }
@@ -274,14 +272,17 @@ void Game::play(void)
 
     
 
-    mario_->draw(*window_);
-    this->drawTurtles();
-
+    this->turtleSpawner(); 
     this->handleMarioEvents();
     this->handleTurtles();
     this->handleCharCollisions();
 
-    if (live_turtle_cnt_ == 0)
+    mario_->draw(*window_);
+    this->drawTurtles();
+    // std::cout << "Live turtle: " << live_turtle_cnt_ << std::endl;
+
+    //  TODO: Find a better sol
+    if (live_turtle_cnt_ == 0 && score_board_->getScore() == "500")
         game_state_ = GameStates::GAMEOVER;
 
 
@@ -512,6 +513,23 @@ bool Game::onFloor(Object *obj)
     }
 }
 
+void Game::turtleSpawner(void)
+{
+    // for (int i = 0; i < 5; i++)
+    // {
+    //     Turtle* t = this->addTurtle();
+    //     t->setPosition(sf::Vector2f(WINDOW_WIDTH/4 + i*50, 250));
+    // }
+    elapsed_time_ = clock_.getElapsedTime();
+    if (spawned_turtle_cnt_ < 5 && elapsed_time_.asSeconds() > 5)
+    {
+        Turtle* t = this->addTurtle();
+        t->setPosition(sf::Vector2f(WINDOW_WIDTH/4, 250));
+        clock_.restart();
+    }
+}
+
+
 Turtle* Game::addTurtle(void)
 {
     Turtle* turtle = new Turtle(window_);
@@ -519,6 +537,7 @@ Turtle* Game::addTurtle(void)
     turtles_ = turtle;
     spawned_turtle_cnt_++;
     live_turtle_cnt_++;
+    spdlog::info(std::to_string(spawned_turtle_cnt_));
     return turtle;
 }
 
@@ -538,9 +557,7 @@ void Game::removeTurtle(Turtle* t)
             {
                 turtles_ = cur->next_;
             }
-            std::cout << cur << std::endl;
-            // BUG: Gives segfault when deleted?
-            // delete cur;
+            delete cur;
             live_turtle_cnt_--;
             return;
         }

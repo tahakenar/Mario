@@ -1,6 +1,8 @@
 #include "Mario/Turtle.h"
 #include "spdlog/spdlog.h"
 
+// TODO: Move them faster as time passes
+
 Turtle::Turtle(sf::RenderWindow *window): Object(window)
 {
     window_ = window;
@@ -11,10 +13,8 @@ Turtle::Turtle(sf::RenderWindow *window): Object(window)
     this->loadTextures();
     sprite_.setTexture(textures_[0]);
 
-    clock_.getElapsedTime();
-
-    this->setLateralSpeed(-3);
-    this->updateTexture();
+    elapsed_time_ = clock_.getElapsedTime();
+    spdlog::info("A turtle is initialized");
 }
 
 Turtle::~Turtle()
@@ -54,6 +54,7 @@ void Turtle::move()
             this->setLateralSpeed(3);
         }
         clock_.restart();
+        std::cout << pos_.x << " - " << pos_.y << std::endl;
     }
 
     if (pos_.x == LATERAL_INTERACTION_TRESHOLD && heading_ == HEADING_LEFT)
@@ -66,6 +67,14 @@ void Turtle::move()
     {
         this->setHeading(HEADING_LEFT);
         this->setLateralSpeed(-3);
+    }
+
+    // TESTING
+    if ((pos_.x < 0 || pos_.x > WINDOW_WIDTH) || (pos_.y < 0 || pos_.y > WINDOW_HEIGHT)
+    || (isnan(pos_.x)) || isnan(pos_.y))
+    {
+        spdlog::warn("Corrupted position, correcting");
+        this->setPosition(sf::Vector2f(WINDOW_WIDTH/4, 250));
     }
     
 
