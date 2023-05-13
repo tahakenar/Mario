@@ -147,9 +147,6 @@ void Game::handleTurtleEvents()
             turtles_->setLateralSpeed(0);
             turtles_->setFallFlag(false);
         }
-        turtles_->move();
-        turtles_->gravityEffect(true);
-
         //TODO: Delete turtle
         if (turtles_->boundingBox().top >= FLOOR_Y)
         {
@@ -158,6 +155,9 @@ void Game::handleTurtleEvents()
             turtles_->setVerticalSpeed(0);
             turtles_->setPosition(sf::Vector2f(WINDOW_WIDTH/4, 270));
         }
+        
+        turtles_->move();
+        turtles_->gravityEffect(true);
     }
     else
     {
@@ -454,7 +454,6 @@ bool Game::hitCeiling(Object *obj)
             return true;
         }
     }
-
     return false;
 }
 
@@ -494,7 +493,6 @@ Turtle* Game::addTurtle(void)
 
 bool Game::checkCollision(Turtle *t, Mario *m, int &side)
 {
-
     if (t->getState() == TurtleStates::DIE || m->getState() == MarioStates::FALL)
         return false;
 
@@ -512,7 +510,6 @@ bool Game::checkCollision(Turtle *t, Mario *m, int &side)
         {
             return true;
         }
-
     }
     return false;
 }

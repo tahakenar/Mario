@@ -19,8 +19,6 @@ Turtle::Turtle(sf::RenderWindow *window): Object(window)
 void Turtle::fall()
 {
     this->setVerticalSpeed(MARIO_JUMP_SPEED);
-    // this->setState(TurtleStates::DIE);
-    // this->updateTexture();
 }
 
 void Turtle::move()
