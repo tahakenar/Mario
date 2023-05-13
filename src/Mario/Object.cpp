@@ -8,6 +8,11 @@ Object::Object(sf::RenderWindow *window): fall_flag_(true)
     heading_ = HEADING_LEFT;
 }
 
+Object::~Object()
+{
+}
+
+
 void Object::setPosition(sf::Vector2f pos)
 {
     if (pos.y > FLOOR_Y)

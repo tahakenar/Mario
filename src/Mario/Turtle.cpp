@@ -6,6 +6,7 @@ Turtle::Turtle(sf::RenderWindow *window): Object(window)
     window_ = window;
     heading_ = HEADING_LEFT;
     state_ = TurtleStates::WALK;
+    next_ = nullptr;
 
     this->loadTextures();
     sprite_.setTexture(textures_[0]);
@@ -15,6 +16,12 @@ Turtle::Turtle(sf::RenderWindow *window): Object(window)
     this->setLateralSpeed(-3);
     this->updateTexture();
 }
+
+Turtle::~Turtle()
+{
+    spdlog::error("A turtle died!");
+}
+
 
 void Turtle::fall()
 {
@@ -29,7 +36,7 @@ void Turtle::move()
     goal_turtle_pos.x += vx_;
     goal_turtle_pos.y += vy_;
     this->setPosition(goal_turtle_pos);
-    this->checkToTeleport();
+    // this->checkToTeleport();
 
     elapsed_time_ = clock_.getElapsedTime();
     if (elapsed_time_.asSeconds() > 2)
@@ -62,7 +69,7 @@ void Turtle::move()
     }
     
 
-    this->updateTexture();    
+    // this->updateTexture();    
 }
 
 void Turtle::jump(bool down)
@@ -148,7 +155,6 @@ void Turtle::updateTexture()
         sprite_.setScale(-1.f,1.f);
         sprite_.setOrigin(+MARIO_WIDTH, sprite_.getOrigin().y);
     }
-
 }
 
 

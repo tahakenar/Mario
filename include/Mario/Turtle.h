@@ -11,11 +11,15 @@ class Turtle : public Object
         float vy_;
         bool heading_changed_;
 
+        Turtle* next_;
+        friend class Game;
+
         sf::Clock clock_; // handle random events & speed increase etc
         sf::Time elapsed_time_;
 
     public:
         Turtle(sf::RenderWindow *window);
+        ~Turtle();
         void move();
         void jump(bool down);
         void fall(void);

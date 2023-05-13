@@ -14,6 +14,8 @@ class Game
     private:
         int speed_;
         int game_state_;
+        int live_turtle_cnt_;
+        int spawned_turtle_cnt_;
         bool mario_fall_flag_;
 
         bool up_;
@@ -34,17 +36,23 @@ class Game
         Game(int speed);
         void play(void);
         void menu(void);
+        void gameOver(bool win);
         void handleMarioEvents();
-        void handleTurtleEvents();
-        void handleCharCollisions();
-        void gameOver(void);
         void update(void);
         void drawBackground(sf::RenderWindow &window);
         bool checkFloorIntersection(const sf::IntRect& obj, const sf::IntRect& floor);
         bool checkCeilingIntersection(const sf::IntRect& obj, const sf::IntRect& ceiling);
         bool onFloor(Object *obj);
         bool hitCeiling(Object *obj);
+
+
         Turtle* addTurtle(void);
+        void removeTurtle(Turtle* t);
+        void drawTurtles(void);
+        void handleTurtles();   // TODO: Find a better name
+        void handleTurtleEvents(Turtle* turtle);
+        void handleCharCollisions();
+
         bool checkCollision(Turtle *t, Mario *m, int &side);
         // TODO: Handle mario & turtle events in functions
 };

@@ -16,10 +16,10 @@ class Object
         int state_;
         int heading_;
         bool fall_flag_;
-        Object* next_;
-        friend class Game;
     public:
         Object(sf::RenderWindow *window);
+        ~Object();
+
         void setPosition(sf::Vector2f pos);
         sf::Vector2f getPosition();
         sf::IntRect boundingBox(void);

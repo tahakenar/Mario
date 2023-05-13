@@ -1,7 +1,13 @@
 #include "Mario/Game.h"
 #include "spdlog/spdlog.h"
 
-Game::Game(int speed): speed_(speed)
+// TODO:
+/*
+    Write init functions for turtles etc.
+*/
+
+
+Game::Game(int speed): speed_(speed), turtles_(nullptr)
 {
     window_ = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT),"Sahane Kazim");
 
@@ -46,12 +52,11 @@ Game::Game(int speed): speed_(speed)
     left_ = false;
     right_ = false;
 
-    // TODO: Initialize turtles
-    // turtles_ = addTurtle();
-    // turtles_[0].setPosition(sf::Vector2f(WINDOW_WIDTH/4, FLOOR_Y-MARIO_HEIGHT));
-    turtles_ = new Turtle(window_); 
-    turtles_->setPosition(sf::Vector2f(WINDOW_WIDTH/4, 270));
-
+    for (int i = 0; i < 5; i++)
+    {
+        Turtle* t = this->addTurtle();
+        t->setPosition(sf::Vector2f(WINDOW_WIDTH/4 + i*50, 250));
+    }
 
     score_board_ = new ScoreBoard();
 
@@ -136,40 +141,51 @@ void Game::handleMarioEvents()
 
 }
 
-void Game::handleTurtleEvents()
+void Game::handleTurtles()
 {
-
-    if (turtles_->getState() == TurtleStates::DIE)
+    Turtle* turtle = turtles_;
+    int idx = 0;
+    while (turtle)
     {
-        if (turtles_->getFallFlag())
+        std::cout << turtle << std::endl;
+        spdlog::info("Idx: " + std::to_string(idx++));
+        this->handleTurtleEvents(turtle);
+        turtle = turtle->next_;
+    }
+}
+
+void Game::handleTurtleEvents(Turtle* turtle)
+{
+    turtle->updateTexture();
+    if (turtle->getState() == TurtleStates::DIE)
+    {
+        if (turtle->getFallFlag())
         {
-            turtles_->fall();
-            turtles_->setLateralSpeed(0);
-            turtles_->setFallFlag(false);
+            turtle->setLateralSpeed(0);
+            turtle->setFallFlag(false);
+            turtle->fall();
         }
-        //TODO: Delete turtle
-        if (turtles_->boundingBox().top >= FLOOR_Y)
+        if (turtle->boundingBox().top >= FLOOR_Y)
         {
-            turtles_->setState(TurtleStates::WALK);
-            turtles_->updateTexture();
-            turtles_->setVerticalSpeed(0);
-            turtles_->setPosition(sf::Vector2f(WINDOW_WIDTH/4, 270));
+            this->removeTurtle(turtle);
+            return;
         }
-        
-        turtles_->move();
-        turtles_->gravityEffect(true);
+
+        turtle->move();
+        turtle->gravityEffect(true);
     }
     else
     {
-        turtles_->setFallFlag(true);
-        turtles_->move();
-        if (onFloor(turtles_))
+        turtle->setFallFlag(true);
+        turtle->move();
+        turtle->checkToTeleport();
+        if (onFloor(turtle))
         {
-            turtles_->gravityEffect(false);
+            turtle->gravityEffect(false);
         }
         else
         {
-            turtles_->gravityEffect(true);
+            turtle->gravityEffect(true);
         }
     }
 
@@ -181,22 +197,25 @@ void Game::handleCharCollisions()
 {
     if (game_state_ == GameStates::PLAY)
     {
-        int up = 3;
-        if (this->checkCollision(turtles_, mario_, up) && !(onFloor(mario_)))
+        Turtle* turtle = turtles_;
+        while (turtle)
         {
-            score_board_->setScore(std::stoi(score_board_->getScore())+100);
-            mario_->setVerticalSpeed(-10);
-            turtles_->setState(TurtleStates::DIE);
-            // mario_->setVerticalSpeed(-10);
-            // turtles_->fall();
-            // turtles_->setLateralSpeed(0);
-        }
-        // DOWN
-        int lateral = 2;
-        if (this->checkCollision(turtles_, mario_, lateral) && onFloor(mario_))
-        {
-            score_board_->setLives(score_board_->getLives()-1);
-            game_state_ = GameStates::DIED;     
+            // TODO: Enumerate sides
+            int up = 3;
+            if (this->checkCollision(turtle, mario_, up) && !(onFloor(mario_)))
+            {
+                score_board_->setScore(std::stoi(score_board_->getScore())+100);
+                mario_->setVerticalSpeed(-10);
+                turtle->setState(TurtleStates::DIE);
+            }
+            // DOWN
+            int lateral = 2;
+            if (this->checkCollision(turtle, mario_, lateral) && onFloor(mario_))
+            {
+                score_board_->setLives(score_board_->getLives()-1);
+                game_state_ = GameStates::DIED;     
+            }
+            turtle = turtle->next_;
         }
     }
 }
@@ -215,29 +234,23 @@ void Game::play(void)
         
         if (event.type == sf::Event::KeyPressed)
         {
-            // spdlog::info("Key pressed");
             switch (event.key.code)
             {
             case  sf::Keyboard::Up:
-                // spdlog::info("Up button pressed");
                 up_ = true;
                 break;
             case sf::Keyboard::Left:
-                // spdlog::info("Left button pressed");
                 left_ = true;
                 break;
             case sf::Keyboard::Right:
-                // spdlog::info("Right button pressed");
                 right_ = true;
                 break;
-            case sf::Keyboard::Down:
-                // spdlog::info("Down button pressed");
-                down_ = true;
-                // TESTING PURPOSES
-                // score_board_->setScore(std::stoi(score_board_->getScore())+1);
-                score_board_->setLives(score_board_->getLives()-1);
-                game_state_ = GameStates::DIED;
-                break;
+            // case sf::Keyboard::Down:
+            //     down_ = true;
+            //     // TESTING PURPOSES
+            //     score_board_->setLives(score_board_->getLives()-1);
+            //     game_state_ = GameStates::DIED;
+            //     break;
             default:
                 break;
             }
@@ -259,13 +272,19 @@ void Game::play(void)
         }
     }
 
-    this->handleCharCollisions();
-    this->handleMarioEvents();
-    this->handleTurtleEvents();
     
 
     mario_->draw(*window_);
-    turtles_->draw(*window_);
+    this->drawTurtles();
+
+    this->handleMarioEvents();
+    this->handleTurtles();
+    this->handleCharCollisions();
+
+    if (live_turtle_cnt_ == 0)
+        game_state_ = GameStates::GAMEOVER;
+
+
     up_ = false;
     down_ = false;
 }
@@ -321,7 +340,7 @@ void Game::menu(void)
     }
 }
 
-void Game::gameOver(void)
+void Game::gameOver(bool win)
 {
     sf::Font font;
     font.loadFromFile(FONT_PATH);
@@ -341,9 +360,17 @@ void Game::gameOver(void)
     score.setFont(font);
     header.setCharacterSize(90);
     score.setCharacterSize(60);
-    header.setFillColor(sf::Color::Red);
     score.setFillColor(sf::Color::White);
-    header.setString("GAME OVER");
+    if (win)
+    {
+        header.setString("YOU WIN!");
+        header.setFillColor(sf::Color::Green);
+    }
+    else
+    {
+        header.setString("GAME OVER");
+        header.setFillColor(sf::Color::Red);
+    }
     score.setString("Your score: " + score_board_->getScore());
     header.setOrigin(sf::Vector2f(header.getLocalBounds().width/2.f, 0));
     header.setPosition(sf::Vector2f(WINDOW_WIDTH/2.f,100.f));
@@ -398,8 +425,10 @@ void Game::update(void)
         if (game_state_ == GameStates::PLAY || game_state_ == GameStates::DIED)
             this->play();
         
-        if (game_state_ == GameStates::GAMEOVER)
-            this->gameOver();
+        if (game_state_ == GameStates::GAMEOVER && score_board_->getLives() > 0)
+            this->gameOver(true);
+        if (game_state_ == GameStates::GAMEOVER && score_board_->getLives() == 0)
+            this->gameOver(false);
 
         window_->display();
         sf::sleep(sf::milliseconds(10000/speed_));
@@ -488,8 +517,48 @@ Turtle* Game::addTurtle(void)
     Turtle* turtle = new Turtle(window_);
     turtle->next_ = turtles_;
     turtles_ = turtle;
+    spawned_turtle_cnt_++;
+    live_turtle_cnt_++;
     return turtle;
 }
+
+void Game::removeTurtle(Turtle* t)
+{
+    Turtle* cur = turtles_;
+    Turtle* prev = nullptr;
+    while (cur)
+    {
+        if (cur == t)
+        {
+            if (prev)
+            {
+                prev->next_ = cur->next_;
+            }
+            else
+            {
+                turtles_ = cur->next_;
+            }
+            std::cout << cur << std::endl;
+            // BUG: Gives segfault when deleted?
+            // delete cur;
+            live_turtle_cnt_--;
+            return;
+        }
+        prev = cur;
+        cur = cur->next_;
+    }
+}
+
+void Game::drawTurtles(void)
+{
+    Turtle* cur = turtles_;
+    while (cur)
+    {
+        cur->draw(*window_);
+        cur = cur->next_;
+    }
+}
+
 
 bool Game::checkCollision(Turtle *t, Mario *m, int &side)
 {
