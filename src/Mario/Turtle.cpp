@@ -124,20 +124,17 @@ int Turtle::getState()
 
 void Turtle::updateTexture()
 {
-    static int walk_states = 0;
-    static int animation_change_cnt = 0;
-
     if (state_ == TurtleStates::WALK)
     {
-        animation_change_cnt++;
-        if (animation_change_cnt == 4)
+        animation_change_cnt_++;
+        if (animation_change_cnt_ == 4)
         {
-            sprite_.setTexture(textures_[walk_states]);
-            walk_states++;
-            animation_change_cnt = 0;
+            sprite_.setTexture(textures_[walk_states_]);
+            walk_states_++;
+            animation_change_cnt_ = 0;
         }
-        if (walk_states == 3)
-            walk_states = 0;
+        if (walk_states_ == 3)
+            walk_states_ = 0;
     }
     if (state_ == TurtleStates::DIE)
     {

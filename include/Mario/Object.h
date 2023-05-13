@@ -15,6 +15,8 @@ class Object
         sf::RenderWindow *window_;
         int state_;
         int heading_;
+        int walk_states_;
+        int animation_change_cnt_;
         bool fall_flag_;
     public:
         Object(sf::RenderWindow *window);

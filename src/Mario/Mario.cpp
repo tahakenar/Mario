@@ -126,24 +126,24 @@ void Mario::setState(int state)
 
 void Mario::updateTexture()
 {
-    static int run_states = 0;
-    static int animation_change_cnt = 0;
+    static int walk_states_ = 0;
+    static int animation_change_cnt_ = 0;
 
     if (state_ == MarioStates::STILL)
         sprite_.setTexture(textures_[0]);
     if (state_ == MarioStates::RUN)
     {
         // TODO: Better solution
-        animation_change_cnt++;
-        if (animation_change_cnt == 4)
+        animation_change_cnt_++;
+        if (animation_change_cnt_ == 4)
         {
-            sprite_.setTexture(textures_[run_states+1]);
-            run_states++;
-            animation_change_cnt = 0;
+            sprite_.setTexture(textures_[walk_states_+1]);
+            walk_states_++;
+            animation_change_cnt_ = 0;
         }
 
-        if (run_states == 3)
-            run_states = 0;
+        if (walk_states_ == 3)
+            walk_states_ = 0;
     }
     if (state_ == MarioStates::JUMP)
         sprite_.setTexture(textures_[5]);

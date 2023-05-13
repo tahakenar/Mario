@@ -5,6 +5,8 @@ Object::Object(sf::RenderWindow *window): fall_flag_(true)
 {
     window_ = window;
     state_ = 0;
+    walk_states_ = 0;
+    animation_change_cnt_ = 0;
     heading_ = HEADING_LEFT;
 }
 
