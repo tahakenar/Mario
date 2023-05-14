@@ -51,6 +51,7 @@ class Game
         void turtleSpawner(void);
         Turtle* addTurtle(void);
         void removeTurtle(Turtle* t);
+        void removeTurtleList();
         void drawTurtles(void);
         void handleTurtles();   // TODO: Find a better name
         void handleTurtleEvents(Turtle* turtle);

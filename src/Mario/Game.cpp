@@ -243,12 +243,6 @@ void Game::play(void)
             case sf::Keyboard::Right:
                 right_ = true;
                 break;
-            // case sf::Keyboard::Down:
-            //     down_ = true;
-            //     // TESTING PURPOSES
-            //     score_board_->setLives(score_board_->getLives()-1);
-            //     game_state_ = GameStates::DIED;
-            //     break;
             default:
                 break;
             }
@@ -270,8 +264,6 @@ void Game::play(void)
         }
     }
 
-    
-
     this->turtleSpawner(); 
     this->handleMarioEvents();
     this->handleTurtles();
@@ -279,12 +271,10 @@ void Game::play(void)
 
     mario_->draw(*window_);
     this->drawTurtles();
-    // std::cout << "Live turtle: " << live_turtle_cnt_ << std::endl;
 
     //  TODO: Find a better sol
     if (live_turtle_cnt_ == 0 && score_board_->getScore() == "500")
         game_state_ = GameStates::GAMEOVER;
-
 
     up_ = false;
     down_ = false;
@@ -352,7 +342,7 @@ void Game::gameOver(bool win)
     sf::Text restart_button;
     restart_button.setFont(font);
     restart_button.setCharacterSize(60);
-    restart_button.setString("Replay!");
+    restart_button.setString("Main menu");
     restart_button.setFillColor(sf::Color::Green);
     restart_button.setOrigin(sf::Vector2f(restart_button.getLocalBounds().width/2.f, 0));
     restart_button.setPosition(sf::Vector2f(WINDOW_WIDTH/2.f,600.f));
@@ -394,6 +384,8 @@ void Game::gameOver(bool win)
                 sf::Vector2i localPosition = sf::Mouse::getPosition(*window_);
                 if (restart_button.getGlobalBounds().contains(static_cast<sf::Vector2f>(localPosition)))
                 {
+                    // clean the level
+                    this->removeTurtleList();
                     game_state_ = GameStates::PLAY;
                     score_board_->setLives(3);
                     score_board_->setScore(0);
@@ -404,7 +396,7 @@ void Game::gameOver(bool win)
                     mario_->setVerticalSpeed(0);
                     left_ = false;
                     right_ = false;
-                    game_state_ = GameStates::PLAY;
+                    game_state_ = GameStates::MENU;
                 }
             }
             
@@ -515,11 +507,6 @@ bool Game::onFloor(Object *obj)
 
 void Game::turtleSpawner(void)
 {
-    // for (int i = 0; i < 5; i++)
-    // {
-    //     Turtle* t = this->addTurtle();
-    //     t->setPosition(sf::Vector2f(WINDOW_WIDTH/4 + i*50, 250));
-    // }
     elapsed_time_ = clock_.getElapsedTime();
     if (spawned_turtle_cnt_ < 5 && elapsed_time_.asSeconds() > 5)
     {
@@ -537,7 +524,6 @@ Turtle* Game::addTurtle(void)
     turtles_ = turtle;
     spawned_turtle_cnt_++;
     live_turtle_cnt_++;
-    spdlog::info(std::to_string(spawned_turtle_cnt_));
     return turtle;
 }
 
@@ -565,6 +551,25 @@ void Game::removeTurtle(Turtle* t)
         cur = cur->next_;
     }
 }
+
+void Game::removeTurtleList()
+{
+    spdlog::warn("Removing all turtles...");
+    Turtle* cur = turtles_;
+    Turtle* prev = nullptr;
+    while (cur)
+    {
+        prev = cur;
+        cur = cur->next_;
+        delete prev;
+    }
+    // reset counters
+    live_turtle_cnt_ = 0;
+    spawned_turtle_cnt_ = 0;
+    clock_.restart();
+    turtles_ = nullptr;
+}
+
 
 void Game::drawTurtles(void)
 {

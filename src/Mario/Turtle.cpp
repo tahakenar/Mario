@@ -13,6 +13,8 @@ Turtle::Turtle(sf::RenderWindow *window): Object(window)
     this->loadTextures();
     sprite_.setTexture(textures_[0]);
 
+    this->setLateralSpeed(-3);
+
     elapsed_time_ = clock_.getElapsedTime();
     spdlog::info("A turtle is initialized");
 }
@@ -54,7 +56,6 @@ void Turtle::move()
             this->setLateralSpeed(3);
         }
         clock_.restart();
-        std::cout << pos_.x << " - " << pos_.y << std::endl;
     }
 
     if (pos_.x == LATERAL_INTERACTION_TRESHOLD && heading_ == HEADING_LEFT)
@@ -69,16 +70,13 @@ void Turtle::move()
         this->setLateralSpeed(-3);
     }
 
-    // TESTING
+    // HARD CODED BUG FIX
     if ((pos_.x < 0 || pos_.x > WINDOW_WIDTH) || (pos_.y < 0 || pos_.y > WINDOW_HEIGHT)
     || (isnan(pos_.x)) || isnan(pos_.y))
     {
         spdlog::warn("Corrupted position, correcting");
         this->setPosition(sf::Vector2f(WINDOW_WIDTH/4, 250));
     }
-    
-
-    // this->updateTexture();    
 }
 
 void Turtle::jump(bool down)
