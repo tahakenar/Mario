@@ -1,10 +1,10 @@
 #include "Mario/Game.h"
 #include "spdlog/spdlog.h"
 
-// TODO:
-/*
-    Write init functions for turtles etc.
-*/
+
+// For collision check
+int lateral_sides = 1;
+int upside = 2;
 
 
 Game::Game(int speed): speed_(speed), turtles_(nullptr), spawned_turtle_cnt_(0), live_turtle_cnt_(0)
@@ -51,12 +51,6 @@ Game::Game(int speed): speed_(speed), turtles_(nullptr), spawned_turtle_cnt_(0),
     up_ = false;
     left_ = false;
     right_ = false;
-
-    // for (int i = 0; i < 5; i++)
-    // {
-    //     Turtle* t = this->addTurtle();
-    //     t->setPosition(sf::Vector2f(WINDOW_WIDTH/4 + i*50, 250));
-    // }
 
     score_board_ = new ScoreBoard();
 
@@ -144,7 +138,6 @@ void Game::handleMarioEvents()
 void Game::handleTurtles()
 {
     Turtle* turtle = turtles_;
-    int idx = 0;
     while (turtle)
     {
         this->handleTurtleEvents(turtle);
@@ -191,38 +184,29 @@ void Game::handleTurtleEvents(Turtle* turtle)
 
 }
 
-void Game::handleCharCollisions()
-{
-    if (game_state_ == GameStates::PLAY)
-    {
-        Turtle* turtle = turtles_;
-        while (turtle)
-        {
-            // TODO: Enumerate sides
-            int up = 3;
-            if (this->checkCollision(turtle, mario_, up) && !(onFloor(mario_)))
-            {
-                score_board_->setScore(std::stoi(score_board_->getScore())+100);
-                mario_->setVerticalSpeed(-10);
-                turtle->setState(TurtleStates::DIE);
-            }
-            // DOWN
-            int lateral = 2;
-            if (this->checkCollision(turtle, mario_, lateral) && onFloor(mario_))
-            {
-                score_board_->setLives(score_board_->getLives()-1);
-                game_state_ = GameStates::DIED;     
-            }
-            turtle = turtle->next_;
-        }
+void Game::handleCharCollisions() {
+  if (game_state_ == GameStates::PLAY) {
+    Turtle* turtle = turtles_;
+    while (turtle) {
+      if (this->checkCollision(turtle, mario_, upside) && !(onFloor(mario_))) {
+        score_board_->setScore(std::stoi(score_board_->getScore()) + 100);
+        mario_->setVerticalSpeed(-10);
+        turtle->setState(TurtleStates::DIE);
+      }
+      if (this->checkCollision(turtle, mario_, lateral_sides) &&
+          onFloor(mario_)) {
+        score_board_->setLives(score_board_->getLives() - 1);
+        game_state_ = GameStates::DIED;
+      }
+      turtle = turtle->next_;
     }
+  }
 }
+
 
 void Game::play(void)
 {
     this->drawBackground(*window_);
-
-
 
     sf::Event event;
     if (window_->pollEvent(event))
@@ -505,16 +489,17 @@ bool Game::onFloor(Object *obj)
     }
 }
 
-void Game::turtleSpawner(void)
-{
-    elapsed_time_ = clock_.getElapsedTime();
-    if (spawned_turtle_cnt_ < 5 && elapsed_time_.asSeconds() > 5)
-    {
-        Turtle* t = this->addTurtle();
-        t->setPosition(sf::Vector2f(WINDOW_WIDTH/4, 250));
-        clock_.restart();
-    }
+void Game::turtleSpawner(void) {
+  elapsed_time_ = clock_.getElapsedTime();
+  if (spawned_turtle_cnt_ < MAXIMUM_TURTLE_COUNT && elapsed_time_.asSeconds() > SPAWN_TURTLE_DELAY) {
+    Turtle* t = this->addTurtle();
+    int lateral_pos = rand() % 2 == 0 ? WINDOW_WIDTH / 4 : WINDOW_WIDTH * 3 / 4;
+    t->setPosition(sf::Vector2f(lateral_pos, UPPER_TELEPORT_Y));
+    t->correctCorruptedPosition();
+    clock_.restart();
+  }
 }
+
 
 
 Turtle* Game::addTurtle(void)
@@ -593,11 +578,11 @@ bool Game::checkCollision(Turtle *t, Mario *m, int &side)
     if ((mario_bb.left + mario_bb.width > turtle_bb.left && mario_bb.left < turtle_bb.left + turtle_bb.width) ||
     (mario_bb.left < turtle_bb.left + turtle_bb.width && mario_bb.left + mario_bb.width > turtle_bb.left))
     {
-        if (abs((mario_bb.top + mario_bb.height) - (turtle_bb.top)) < 10 && side == UP)
+        if (abs((mario_bb.top + mario_bb.height) - (turtle_bb.top)) < 10 && side == upside)
         {
             return true;
         }
-        if (mario_bb.top + mario_bb.height == turtle_bb.top + turtle_bb.height && side != UP)
+        else if (mario_bb.top + mario_bb.height == turtle_bb.top + turtle_bb.height && side == lateral_sides)
         {
             return true;
         }

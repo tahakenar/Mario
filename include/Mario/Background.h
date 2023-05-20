@@ -16,7 +16,6 @@ class Background
         sf::Vector2f pos_;
         sf::RenderWindow *window_;
         sf::FloatRect bounding_box_;
-
     public:
         Background(std::string asset_path, int width, int height);
         void draw(sf::RenderWindow *window);
@@ -24,5 +23,6 @@ class Background
         void flip(int axis);
         sf::IntRect boundingBox(void);
 };
+
 
 #endif

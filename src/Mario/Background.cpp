@@ -1,10 +1,11 @@
 #include "Mario/Background.h"
 
-Background::Background(std::string asset_path, int width, int height): width_(width), height_(height)
+Background::Background(std::string asset_path, int width, int height)
+    : width_(width), 
+      height_(height)
 {
     texture_.loadFromFile(asset_path);
     texture_.setRepeated(true);
-
     sprite_.setTexture(texture_);
     sprite_.setTextureRect(sf::IntRect(0,0,width_,height_));
 }

@@ -56,9 +56,7 @@ class Game
         void handleTurtles();   // TODO: Find a better name
         void handleTurtleEvents(Turtle* turtle);
         void handleCharCollisions();
-
         bool checkCollision(Turtle *t, Mario *m, int &side);
-        // TODO: Handle mario & turtle events in functions
 };
 
 #endif
