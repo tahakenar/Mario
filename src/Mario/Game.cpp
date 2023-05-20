@@ -179,9 +179,6 @@ void Game::handleTurtleEvents(Turtle* turtle)
             turtle->gravityEffect(true);
         }
     }
-
-
-
 }
 
 void Game::handleCharCollisions() {
@@ -256,7 +253,6 @@ void Game::play(void)
     mario_->draw(*window_);
     this->drawTurtles();
 
-    //  TODO: Find a better sol
     if (live_turtle_cnt_ == 0 && score_board_->getScore() == "500")
         game_state_ = GameStates::GAMEOVER;
 
@@ -516,18 +512,12 @@ void Game::removeTurtle(Turtle* t)
 {
     Turtle* cur = turtles_;
     Turtle* prev = nullptr;
-    while (cur)
-    {
-        if (cur == t)
-        {
+    while (cur) {
+        if (cur == t) {
             if (prev)
-            {
                 prev->next_ = cur->next_;
-            }
             else
-            {
                 turtles_ = cur->next_;
-            }
             delete cur;
             live_turtle_cnt_--;
             return;

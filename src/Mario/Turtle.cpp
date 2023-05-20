@@ -164,18 +164,6 @@ void Turtle::checkToTeleport() {
 }
 
 
-// void Turtle::checkToTeleport()
-// {
-//     if (pos_.y > 860)
-//     {
-//         if (pos_.x < (PIPE_X_LEFT + PIPE_WIDTH))
-//             this->teleport(LEFT_PIPE);
-//         if (pos_.x > (PIPE_X_RIGHT - MARIO_WIDTH))
-//             this->teleport(RIGHT_PIPE);
-//     }
-// }
-
-
 void Turtle::teleport(int pipe) {
   if (pipe == LEFT_PIPE) {
     this->setPosition(
@@ -187,14 +175,3 @@ void Turtle::teleport(int pipe) {
   }
 }
 
-// void Turtle::teleport(int pipe)
-// {
-//     if (pipe == LEFT_PIPE)
-//     {
-//         this->setPosition(sf::Vector2f(PIPE_S_X_LEFT + PIPE_S_WIDTH, 200));
-//     }
-//     if (pipe == RIGHT_PIPE)
-//     {
-//         this->setPosition(sf::Vector2f(PIPE_S_X_RIGHT - MARIO_WIDTH, 200));
-//     }
-// }
