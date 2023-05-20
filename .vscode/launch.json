@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Mario",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/mario",
+        "args": [],
+        "cwd": "${workspaceFolder}/build",
+        "environment": [],
+        "externalConsole": true,
+        "osx": {
+          "MIMode": "lldb"
+        },
+        "preLaunchTask": "Build Mario"
+      }
+    ]
+  }
