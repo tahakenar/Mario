@@ -25,6 +25,8 @@ make
 ./mario
 ```
 
+![Sahane Kazim](kazim.gif)
+
 ## Dependencies
 
 - SFML
